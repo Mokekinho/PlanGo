@@ -18,6 +18,8 @@ Instead, it focuses on manual trip management, giving you a clear overview of yo
 
 # Requirements - MVP
 
+> MVP - Minimum Viable Product
+
 ## Create and manage trips 
 
 - As a user, I want to create, edit, and delete trips so that I can organize my travel plans.
@@ -42,3 +44,74 @@ Instead, it focuses on manual trip management, giving you a clear overview of yo
 
 - As a user, I want to store ticket and booking references so that I can find them easily.
 
+# Future features
+
+## Advanced trip management
+
+- View trips in a calendar or timeline view.
+
+## Advanced budget & expenses
+
+- Allocate budget into categories (flights, hotels, food, transportation, etc.).
+
+- Currency conversion and multi-currency support.
+
+- Graphs and charts for spending visualization.
+
+## Advanced travel itinerary
+
+- Add activities/tours with date, time, location, and cost.
+
+- Integration with Google Maps for locations.
+
+## People management
+
+- Add traveling companions with their contact info.
+
+- Assign expenses to specific people for split cost tracking.
+
+- Share trip plan with others.
+
+## Expanded useful information
+
+- Visa requirements and expiry dates.
+
+- Vaccination requirements.
+
+- Travel insurance details.
+
+- Emergency contact list (embassy, hospitals, airlines).
+
+## Document storage
+
+- Upload or take pictures of tickets, hotel confirmations, passport scans, etc.
+
+- Offline access to stored documents.
+
+## Notifications & reminders
+
+- Alerts for passport/visa expiry, flight check-in, payment due dates, and activity starts.
+
+## Offline mode
+
+- View all saved trip details without internet.
+
+- Sync when back online.
+
+# Security features
+
+- PIN, fingerprint, or face unlock for sensitive data.
+
+- Encrypted cloud backup.
+
+## Nice-to-have extras
+
+- Packing checklist.
+
+- Weather forecast.
+
+- Local time & time difference.
+
+- Phrasebook for common expressions.
+
+- Integrated currency converter.
