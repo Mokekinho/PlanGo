@@ -32,6 +32,7 @@ fun MainScreen(){
 
         innerPadding
         TravelListScreen(innerPadding)
+
     }
 
 

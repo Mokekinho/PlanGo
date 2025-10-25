@@ -39,7 +39,7 @@ import java.time.LocalDate
 
 /**
  *
- * ChatGpt idea for what sho in this screen
+ * ChatGpt idea for what show in this screen
  *
  * --------------------------------------------------
  * [🌎] Vacation in Paris
