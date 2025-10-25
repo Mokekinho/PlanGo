@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.plango.model.Travel
 import com.example.plango.util.Date
+import com.example.plango.util.Money
 
 
 /**
@@ -74,7 +76,6 @@ fun TravelInfoScreen(
             .fillMaxSize()
             .background(color = MaterialTheme.colorScheme.background)
             .padding(top = 30.dp)
-            .padding(horizontal = 10.dp)
     ) {
         //Title
         Text(
@@ -86,6 +87,7 @@ fun TravelInfoScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 10.dp)
         ) {
 
 
@@ -124,20 +126,40 @@ fun TravelInfoScreen(
 
 
         }
+        // To separe items
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(5.dp)
+                .background(color = MaterialTheme.colorScheme.primary)
+                //.background(color = Color.DarkGray)
+        )
+
         //Budget overview
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 10.dp)
         ) {
             Text(
-                text = "Budget overview"
+                text = "Budget overview",
+                style = MaterialTheme.typography.headlineLarge
             )
+            Text(
+                text = "Total Budget: " + Money(travel.budget),
+                style = MaterialTheme.typography.headlineSmall
+            )
+            val totalSpent = travel.expenses.sumOf { it.amount } //This function sumOf iterates over the list and it is summing the amounts
+            Text(
+                text = "Spent: " + Money(totalSpent),
+                style = MaterialTheme.typography.headlineSmall
+            )
+            Text(
+                text = "Remaining: " + Money(travel.budget - totalSpent),
+                style = MaterialTheme.typography.headlineSmall
+            )
+
         }
 
     }
-
-
-
-
-
 }
