@@ -1,6 +1,7 @@
 package com.example.plango.ui.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.plango.model.DocumentInfo
 import com.example.plango.model.Expense
 import com.example.plango.model.Flight
@@ -35,6 +37,11 @@ import com.example.plango.util.Date
 import com.example.plango.util.Money
 import java.nio.file.WatchEvent
 import java.time.LocalDate
+
+import android.net.Uri
+import com.example.plango.navigation.Routes
+import com.google.gson.Gson
+
 
 
 /**
@@ -54,7 +61,8 @@ import java.time.LocalDate
 
 @Composable
 fun TravelListScreen(
-    innerPadding : PaddingValues
+    innerPadding : PaddingValues,
+    navController: NavController,//preciso do navController para fazer navegações
 ){
     val travels = listOf(
         Travel(
@@ -265,7 +273,10 @@ fun TravelListScreen(
                     modifier = Modifier
                         .height(5.dp)
                 )
-                TravelCard(travelItem)
+                TravelCard(travelItem){ selected ->
+                    val travelJson = Uri.encode(Gson().toJson(selected)) // transforma  objeto em um json pq ele é muito complexo pra passar noramal
+                    navController.navigate("${Routes.TRAVELS_INFO}/$travelJson")
+                }
 
 
             }
@@ -283,7 +294,9 @@ fun TravelListScreen(
 
 @Composable
 fun TravelCard(
-    travel : Travel
+    travel : Travel,
+    onClick: (Travel) -> Unit
+    ,
 ){
 
     Box(
@@ -294,6 +307,12 @@ fun TravelCard(
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(15.dp)
+            )
+            .clickable(
+                onClick = {
+                    //do it
+                    onClick(travel)
+                }
             )
     ){
 

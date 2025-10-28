@@ -13,12 +13,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import com.example.compose.PlanGoTheme
 import com.example.plango.model.DocumentInfo
 import com.example.plango.model.Expense
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
+import com.example.plango.sandbox.FakeMainScreen
 import com.example.plango.ui.MainScreen
 import com.example.plango.ui.screen.TravelInfoScreen
 import java.time.LocalDate
@@ -30,17 +34,17 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PlanGoTheme {
-                //MainScreen()
-                Teste()
+                FakeMainScreen()
             }
         }
     }
 }
 
-
+/**
 @Composable
 fun Teste(){
     TravelInfoScreen(
+        innerPadding = //passsasr,
         travel = Travel(
             id = 8,
             name = "Conference in New York",
@@ -67,3 +71,5 @@ fun Teste(){
         )
     )
 }
+
+ **/

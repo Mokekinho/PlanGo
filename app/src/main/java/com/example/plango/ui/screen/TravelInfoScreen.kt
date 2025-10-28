@@ -7,6 +7,7 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -80,11 +81,14 @@ import com.example.plango.util.Money
 
 @Composable
 fun TravelInfoScreen(
-     travel: Travel
+    innerPadding: PaddingValues,
+    travel: Travel,
 ){
      // ← this is the correct one
     Surface( // isso aqui ajuda nas cores ficar certas, estudar sobre
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
     ) {
