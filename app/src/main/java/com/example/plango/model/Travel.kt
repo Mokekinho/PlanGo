@@ -1,6 +1,13 @@
 package com.example.plango.model
 
+import com.example.plango.database.DocumentInfoEntity
+import com.example.plango.database.ExpenseEntity
+import com.example.plango.database.FlightEntity
+import com.example.plango.database.HotelEntity
+import com.example.plango.database.TravelEntity
+import com.example.plango.database.TravelWithList
 import java.time.LocalDate
+import kotlin.text.category
 
 data class Travel(
     val id: Int,
@@ -20,7 +27,77 @@ data class Travel(
 
     val documentInfo: DocumentInfo? = null,    // Passport/CPF etc.
     val notes: String? = null                  // Extra notes user wants to keep
-)
+){
+
+    fun toEntitySet(): TravelWithList {
+        val travelEntity = TravelEntity(
+            id = id,
+            name = name,
+            destination = destination,
+            isInternational = isInternational,
+            startDate = startDate,
+            endDate = endDate,
+            purpose = purpose,
+            budget = budget,
+            notes = notes
+        )
+
+        val expenseEntities = expenses.map { expense ->
+            ExpenseEntity(
+                id = expense.id,
+                travelId = id,
+                description = expense.description,
+                amount = expense.amount,
+                category = expense.category,
+                date = expense.date
+            )
+        }
+
+        val flightEntities = flights.map { flight ->
+            FlightEntity(
+                id = flight.id,
+                travelId = id,
+                airline = flight.airline,
+                flightNumber = flight.flightNumber,
+                departure = flight.departure,
+                arrival = flight.arrival,
+                departureDate = flight.departureDate,
+                arrivalDate = flight.arrivalDate,
+                bookingReference = flight.bookingReference
+            )
+        }
+
+        val hotelEntities = hotels.map { hotel ->
+            HotelEntity(
+                id = hotel.id,
+                travelId = id,
+                name = hotel.name,
+                address = hotel.address,
+                checkIn = hotel.checkIn,
+                checkOut = hotel.checkOut,
+                bookingReference = hotel.bookingReference
+            )
+        }
+
+        val documentInfoEntity = documentInfo?.let {
+            DocumentInfoEntity(
+                id = 0, // será autogerado pelo Room
+                travelId = id,
+                passportNumber = it.passportNumber,
+                rgOrCpf = it.rgOrCpf
+            )
+        }
+
+        return TravelWithList(
+            travelEntity = travelEntity,
+            expenses = expenseEntities,
+            flights = flightEntities,
+            hotels = hotelEntities,
+            documentInfoEntity = documentInfoEntity
+        )
+    }
+
+}
 
 data class Expense(
     val id: Int,

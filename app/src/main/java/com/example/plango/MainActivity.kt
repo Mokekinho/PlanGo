@@ -16,7 +16,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import androidx.room.Room
 import com.example.compose.PlanGoTheme
+import com.example.plango.database.AppDatabase
+import com.example.plango.database.TravelRepository
 import com.example.plango.model.DocumentInfo
 import com.example.plango.model.Expense
 import com.example.plango.model.Flight
@@ -31,13 +34,24 @@ import java.time.LocalDate
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        //criei o banco de dados, o ideal é estudar arquitetura MVVM mas por enquanto vai assim msm
+        val db = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java,
+            "travel_database"
+        ).build()
+
+        val repository = TravelRepository(db.travelDao())
+
         enableEdgeToEdge()
         setContent {
             PlanGoTheme {
-                MainScreen()
+                MainScreen(repository)
             }
         }
     }
+
 }
 
 /**

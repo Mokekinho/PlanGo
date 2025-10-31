@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
 import com.example.plango.ui.screen.HomeScreen
 import com.example.plango.ui.screen.TravelInfoScreen
@@ -17,7 +18,9 @@ import kotlinx.serialization.Serializable
 
 
 @Composable
-fun AppNavigation(){
+fun AppNavigation(
+    repository: TravelRepository
+){
 
     val navController = rememberNavController()
 
@@ -28,7 +31,8 @@ fun AppNavigation(){
         // Tela inicial
         composable<HomeScreenNav> {
             HomeScreen(
-                navController
+                navController,
+                repository
             )
         }
 

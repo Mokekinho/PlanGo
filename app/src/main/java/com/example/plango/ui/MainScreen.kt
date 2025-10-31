@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
 import com.example.plango.navigation.AppNavigation
 import com.example.plango.navigation.Routes
@@ -24,6 +25,8 @@ import com.example.plango.ui.screen.TravelListScreen
 import com.google.gson.Gson
 
 @Composable
-fun MainScreen(){
-    AppNavigation()
+fun MainScreen(
+    repository: TravelRepository
+){
+    AppNavigation(repository)
 }

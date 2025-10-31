@@ -17,13 +17,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
 import com.example.plango.navigation.Routes
 import com.google.gson.Gson
 
 @Composable
 fun HomeScreen(
-    navController: NavController
+    navController: NavController,
+    repository: TravelRepository
 ){
     // estrutura da tela
     Scaffold(
