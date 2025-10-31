@@ -19,6 +19,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import kotlinx.serialization.Serializable
 
 
@@ -46,6 +47,10 @@ fun FakeMainScreen() {
             FakeHomeScreen(navController)
         }
         composable<FakeGreetingScreenRoute> {
+
+            val args : FakeGreetingScreenRoute = it.toRoute() //basicamente essa função recria o objeto serializado, a serialização basicamente é um obejto que pode ser tranformado em outra coisa e depois destransformado
+
+            FakeGreetingScreen(args.name,args.age)
 
 
         }
@@ -165,7 +170,12 @@ fun FakeHomeScreen(
         val age :Int = 20
         Button(
             onClick = {
-                navController.navigate("greeting/$name/$age")
+                navController.navigate(
+                    FakeGreetingScreenRoute(
+                        name,
+                        20
+                    )
+                )
             }
         ) {
             Text("OK")

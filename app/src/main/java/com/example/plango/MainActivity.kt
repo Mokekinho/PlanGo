@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             PlanGoTheme {
-                FakeMainScreen()
+                MainScreen()
             }
         }
     }
