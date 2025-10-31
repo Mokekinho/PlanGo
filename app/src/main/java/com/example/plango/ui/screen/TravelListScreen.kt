@@ -41,6 +41,7 @@ import java.time.LocalDate
 import android.net.Uri
 import com.example.plango.database.TravelRepository
 import com.example.plango.navigation.Routes
+import com.example.plango.navigation.TravelInfoNav
 import com.google.gson.Gson
 
 
@@ -276,8 +277,8 @@ fun TravelListScreen(
                         .height(5.dp)
                 )
                 TravelCard(travelItem){ selected ->
-                    val travelJson = Uri.encode(Gson().toJson(selected)) // transforma  objeto em um json pq ele é muito complexo pra passar noramal
-                    navController.navigate("${Routes.TRAVELS_INFO}/$travelJson")
+                    val travelId = selected.id
+                    navController.navigate(TravelInfoNav(travelId))
                 }
 
 

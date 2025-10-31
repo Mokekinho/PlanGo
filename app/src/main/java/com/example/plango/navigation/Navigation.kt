@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
 import com.example.plango.ui.screen.HomeScreen
@@ -37,14 +38,10 @@ fun AppNavigation(
         }
 
         //por enquanto vai ficar assim, no futuro quando eu terminar o banco de dados eu passo so o id
-        composable(
-            route = "${Routes.TRAVELS_INFO}/{travelJson}",
-            arguments = listOf(navArgument("travelJson") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val travelJson = backStackEntry.arguments?.getString("travelJson")
-            val travel = Gson().fromJson(Uri.decode(travelJson), Travel::class.java)
+        composable<TravelInfoNav> {
+            val args : TravelInfoNav = it.toRoute()
             TravelInfoScreen(
-                travel,
+                args.id,
                 repository
             )
         }
@@ -59,3 +56,8 @@ fun AppNavigation(
 
 @Serializable
 object HomeScreenNav
+
+@Serializable
+data class TravelInfoNav(
+    val id : Int
+)
