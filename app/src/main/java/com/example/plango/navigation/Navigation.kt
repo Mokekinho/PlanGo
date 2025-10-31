@@ -1,18 +1,54 @@
 package com.example.plango.navigation
 
+import android.net.Uri
+import android.net.wifi.hotspot2.pps.HomeSp
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.plango.model.Travel
+import com.example.plango.ui.screen.HomeScreen
+import com.example.plango.ui.screen.TravelInfoScreen
+import com.example.plango.ui.screen.TravelListScreen
+import com.google.gson.Gson
+import kotlinx.serialization.Serializable
 
 
 @Composable
-fun Navigation(){
-    val navController = rememberNavController() //o NavController ele controla para onde o aplicativo deve ir e para onde ele passou, ele é criado com a função rememberNavController() -- É IMPORTANTE COLOCAR ELE ALTO NA HIERARQUIA PARA PODER PASSA-LO ADIANTE.
+fun AppNavigation(){
 
-    //O Navhost é onde a tela esta, o que deve ser mostrado, ele recebe como parametro um navcontroler, é possivel apssar um graph, mas aqui iremos passar um start Destination, ou seja a tela inicial. é similar com url de sites
-    //NavHost(navController = navController, startDestination = ) { }
+    val navController = rememberNavController()
 
+    NavHost(
+        navController = navController,
+        startDestination = HomeScreenNav
+    ) {
+        // Tela inicial
+        composable<HomeScreenNav> {
+            HomeScreen(
+                navController
+            )
+        }
 
+        //por enquanto vai ficar assim, no futuro quando eu terminar o banco de dados eu passo so o id
+        composable(
+            route = "${Routes.TRAVELS_INFO}/{travelJson}",
+            arguments = listOf(navArgument("travelJson") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val travelJson = backStackEntry.arguments?.getString("travelJson")
+            val travel = Gson().fromJson(Uri.decode(travelJson), Travel::class.java)
+            TravelInfoScreen(travel)
+        }
 
+        // Outra tela de exemplo
+        //composable("details") {
+        //DetailsScreen(navController)
+        //}
+    }
 
 }
+
+@Serializable
+object HomeScreenNav

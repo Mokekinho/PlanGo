@@ -81,13 +81,12 @@ import com.example.plango.util.Money
 
 @Composable
 fun TravelInfoScreen(
-    innerPadding: PaddingValues,
     travel: Travel,
 ){
      // ← this is the correct one
     Surface( // isso aqui ajuda nas cores ficar certas, estudar sobre
         modifier = Modifier
-            .padding(innerPadding)
+            .padding(top = 30.dp)
             .fillMaxSize(),
         color = MaterialTheme.colorScheme.background,
         contentColor = MaterialTheme.colorScheme.onBackground
