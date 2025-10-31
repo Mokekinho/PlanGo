@@ -42,6 +42,10 @@ fun HomeScreen(
             )
         }
     ) { innerPadding ->
-        TravelListScreen(innerPadding, navController)
+        TravelListScreen(
+            innerPadding,
+            navController,
+            repository
+        )
     }
 }

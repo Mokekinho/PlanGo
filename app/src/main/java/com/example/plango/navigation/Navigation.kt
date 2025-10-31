@@ -43,7 +43,10 @@ fun AppNavigation(
         ) { backStackEntry ->
             val travelJson = backStackEntry.arguments?.getString("travelJson")
             val travel = Gson().fromJson(Uri.decode(travelJson), Travel::class.java)
-            TravelInfoScreen(travel)
+            TravelInfoScreen(
+                travel,
+                repository
+            )
         }
 
         // Outra tela de exemplo

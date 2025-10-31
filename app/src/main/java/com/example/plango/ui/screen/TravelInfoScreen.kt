@@ -29,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.plango.database.TravelRepository
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
@@ -82,6 +83,7 @@ import com.example.plango.util.Money
 @Composable
 fun TravelInfoScreen(
     travel: Travel,
+    repository: TravelRepository
 ){
      // ← this is the correct one
     Surface( // isso aqui ajuda nas cores ficar certas, estudar sobre

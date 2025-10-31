@@ -39,6 +39,7 @@ import java.nio.file.WatchEvent
 import java.time.LocalDate
 
 import android.net.Uri
+import com.example.plango.database.TravelRepository
 import com.example.plango.navigation.Routes
 import com.google.gson.Gson
 
@@ -63,6 +64,7 @@ import com.google.gson.Gson
 fun TravelListScreen(
     innerPadding : PaddingValues,
     navController: NavController,//preciso do navController para fazer navegações
+    repository: TravelRepository
 ){
     val travels = listOf(
         Travel(
