@@ -238,6 +238,5 @@ fun AddEditTravelScreen(
             }
         }
 
-        ExposedDropdownMenuBox() { }
     }
 }
