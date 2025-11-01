@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -32,6 +33,7 @@ import com.google.gson.Gson
 import java.time.LocalDate
 
 @Composable
+@ExperimentalMaterial3Api
 fun MainScreen(
     repository: TravelRepository
 ){

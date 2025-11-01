@@ -2,6 +2,7 @@ package com.example.plango.navigation
 
 import android.net.Uri
 import android.net.wifi.hotspot2.pps.HomeSp
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -20,6 +21,7 @@ import kotlinx.serialization.Serializable
 
 
 @Composable
+@ExperimentalMaterial3Api
 fun AppNavigation(
     repository: TravelRepository
 ){
@@ -42,6 +44,7 @@ fun AppNavigation(
         composable<TravelInfoNav> {
             val args : TravelInfoNav = it.toRoute()
             TravelInfoScreen(
+                navController,
                 args.id,
                 repository
             )
@@ -49,7 +52,7 @@ fun AppNavigation(
 
         composable<AddEditTravelNav> {
             val args : AddEditTravelNav = it.toRoute()
-            AddEditTravelScreen(args.travelId)
+            AddEditTravelScreen(navController,args.travelId)
         }
 
         // Outra tela de exemplo
