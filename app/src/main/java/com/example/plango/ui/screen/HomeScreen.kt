@@ -4,6 +4,10 @@ import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,6 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
+import com.example.plango.navigation.AddEditTravelNav
 import com.example.plango.navigation.Routes
 import com.google.gson.Gson
 
@@ -40,6 +45,18 @@ fun HomeScreen(
                 "BARRA DE CIMA SO PRA VER UMA COISA",
                 fontSize = 20.sp
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = {
+                    navController.navigate(AddEditTravelNav(null))
+                }
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Add Travel"
+                )
+            }
         }
     ) { innerPadding ->
         TravelListScreen(

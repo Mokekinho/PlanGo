@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -34,7 +35,15 @@ import java.time.LocalDate
 fun MainScreen(
     repository: TravelRepository
 ){
-    AppNavigation(repository)
+    Surface( // isso aqui ajuda nas cores ficar certas, estudar sobre
+        modifier = Modifier
+            .fillMaxSize(),
+        color = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground
+    ){
+        AppNavigation(repository)
+    }
+
 //
 //    //exemplo pra popular o banco
 //    LaunchedEffect(Unit) {

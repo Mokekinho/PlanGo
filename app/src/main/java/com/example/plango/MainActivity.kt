@@ -7,9 +7,12 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,6 +28,8 @@ import com.example.plango.model.Expense
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
+import com.example.plango.sandbox.DateRangePickerMeu
+
 import com.example.plango.sandbox.FakeMainScreen
 import com.example.plango.ui.MainScreen
 import com.example.plango.ui.screen.TravelInfoScreen
@@ -32,6 +37,7 @@ import java.time.LocalDate
 
 
 class MainActivity : ComponentActivity() {
+    @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -48,6 +54,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             PlanGoTheme {
                 MainScreen(repository)
+
             }
         }
     }
