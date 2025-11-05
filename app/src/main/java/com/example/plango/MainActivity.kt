@@ -17,6 +17,7 @@ class MainActivity : ComponentActivity() {
     @ExperimentalMaterial3Api
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("onCreate")
 
         //criei o banco de dados, o ideal é estudar arquitetura MVVM mas por enquanto vai assim msm
         val db = Room.databaseBuilder(
@@ -35,7 +36,39 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    // we can override the other functions of the lifecycle
+    override fun onStart() {
+        // The Start function the user can see, but he can´t interact
+        super.onStart()
+        //just to see with the logcat
+        println("onStart")
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+        println("onResume")
+    }
+
+    override fun onPause() {
+        super.onPause()
+        println("onPause")
+    }
+
+    override fun onStop() {
+        super.onStop()
+        println("onStop")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        println("onDestroy")
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        println("onRestart")
+    }
 }
 
 /**
