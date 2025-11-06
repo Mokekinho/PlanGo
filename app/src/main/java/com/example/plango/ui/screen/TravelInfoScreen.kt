@@ -24,6 +24,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -37,6 +38,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelEntity
 import com.example.plango.database.TravelRepository
@@ -45,6 +48,8 @@ import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
 import com.example.plango.util.Date
 import com.example.plango.util.Money
+import com.example.plango.view_models.TravelInfoViewModel
+import com.example.plango.view_models.TravelInfoViewModelFactory
 
 
 /**
@@ -95,357 +100,352 @@ fun TravelInfoScreen(
     navController: NavController,
     travelId: Int,
     repository: TravelRepository
-){
+) {
 
-    // 1. Crie o Estado Reativo
-    // Inicialize o estado como 'null' (ou um objeto Travel padrão)
-    // até que os dados sejam carregados. Use 'by' para facilitar o acesso.
-    var travelTemp by remember {
-        mutableStateOf<Travel?>(null)
-    }
-
-    // 2. Carregue os dados de forma assíncrona
-    LaunchedEffect(Unit) {
-        // Execute a busca (assíncrona)
-        val loadedTravel = repository.getTravelById(travelId)
-
-        // 3. Atualize o Estado
-        // Quando a busca terminar, o 'travel' é atualizado,
-        // e o Compose RECOMPÕE a tela.
-        travelTemp = loadedTravel
-    }
-     // ← this is the correct one
-
-    // 4. Verifique se o objeto foi carregado
-    if (travelTemp == null) {
-        // Exibe um indicador de carregamento enquanto aguarda
-        Text(
-            text = "Carregando Dados",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    } // Função auxiliar para mostrar um CircularProgressIndicator
-    else {
-        val travel : Travel = travelTemp!!
-
-        Scaffold (
-            topBar = {
-                Column(
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .fillMaxWidth(),
-                ) {
+    val viewModel: TravelInfoViewModel = viewModel(
+        factory = TravelInfoViewModelFactory(repository, travelId)
+    )
+    val state by viewModel.state.collectAsState()
 
 
-                    Row(
+    when {
+        state.isLoading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        }
+
+        state.error != null -> {
+            Text("Error: ${state.error}")
+        }
+
+        else -> {
+
+            val travel: Travel = state.travel!!
+
+            Scaffold(
+                topBar = {
+                    Column(
                         modifier = Modifier
+                            .padding(horizontal = 20.dp)
                             .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = "Change Dates",
+
+
+                        Row(
                             modifier = Modifier
-                                .clickable(
-                                    onClick = {
-                                        navController.popBackStack()
-                                    }
-                                )
-                        )
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Default.ArrowBack,
+                                contentDescription = "Change Dates",
+                                modifier = Modifier
+                                    .clickable(
+                                        onClick = {
+                                            navController.popBackStack()
+                                        }
+                                    )
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                            // TITLE
+                            Text(
+                                text = travel.name,
+                                style = MaterialTheme.typography.headlineLarge,
+                            )
+
+                        }
                         Spacer(
                             modifier = Modifier
                                 .padding(10.dp)
                         )
-                        // TITLE
-                        Text(
-                            text = travel.name,
-                            style = MaterialTheme.typography.headlineLarge,
-                        )
-
                     }
-                    Spacer(
-                        modifier = Modifier
-                            .padding(10.dp)
-                    )
-                }
 
-            },
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 30.dp)
-        ) { innerPadding ->
-
-
-            Column(
+                },
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
-                    .verticalScroll(rememberScrollState())// ← this is the correct one
+                    .padding(top = 30.dp)
+            ) { innerPadding ->
 
-            ) {
-                //Title
 
-                // Basic Information
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .verticalScroll(rememberScrollState())// ← this is the correct one
+
                 ) {
+                    //Title
 
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = travel.destination,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Spacer(
-                            modifier = Modifier
-                                .padding(5.dp)
-                                .size(20.dp)
-                                .background(color = if (travel.isInternational) Color.Green else Color.Blue)
-                        )
-                        Text(
-                            text = if (travel.isInternational) "International" else "National",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                    Row(
+                    // Basic Information
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
                     ) {
-                        Text(
-                            text = Date(travel.startDate) + " - " + Date(travel.endDate) + " - " + travel.purpose,
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-
-                    }
 
 
-                }
-                // To separe items
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                    //.background(color = Color.DarkGray)
-                )
-
-                //Budget overview
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Text(
-                        text = "Budget overview",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    Text(
-                        text = "Total Budget: " + Money(travel.budget),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    val totalSpent =
-                        travel.expenses.sumOf { it.amount } //This function sumOf iterates over the list and it is summing the amounts
-                    Text(
-                        text = "Spent: " + Money(totalSpent),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                    Text(
-                        text = "Remaining: " + Money(travel.budget - totalSpent),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-
-                }
-
-                // To separe items
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                    //.background(color = Color.DarkGray)
-                )
-
-                //Expenses
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Text(
-                        text = "Expenses",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-
-                    travel.expenses.forEach { expenseItem -> // nesse caso é necessario usar foreach pq nad da pra por lazycolumn dentro de lazy column se nao da problema
-
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ) {
+                            Text(
+                                text = travel.destination,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .size(20.dp)
+                                    .background(color = if (travel.isInternational) Color.Green else Color.Blue)
+                            )
+                            Text(
+                                text = if (travel.isInternational) "International" else "National",
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                        }
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                modifier = Modifier
-                                    .weight(2f)
-                                    .fillMaxWidth(),
-                                text = expenseItem.description,
+                                text = Date(travel.startDate) + " - " + Date(travel.endDate) + " - " + travel.purpose,
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            Text(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                text = Money(expenseItem.amount),
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Text(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .fillMaxWidth(),
-                                text = expenseItem.category,
-                                style = MaterialTheme.typography.bodyLarge
-                            )
+
                         }
+
+
                     }
+                    // To separe items
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                        //.background(color = Color.DarkGray)
+                    )
 
-
-                    Button(
-                        onClick = {
-                            //click
-                        }
+                    //Budget overview
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
                     ) {
                         Text(
-                            text = "+ Add Expense",
-                            fontSize = 20.sp,
-                        )
-                    }
-                }
-
-                // To separe items
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                    //.background(color = Color.DarkGray)
-                )
-
-                // Flights
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Text(
-                        text = "Flights",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    travel.flights.forEach { flightItem ->
-                        FlightCard(flightItem)
-                    }
-
-
-                }
-
-                // To separe items
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                    //.background(color = Color.DarkGray)
-                )
-
-                //Hotels
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-
-                    Text(
-                        text = "Hotels",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    travel.hotels.forEach { hotelItem ->
-                        HotelCard(hotelItem)
-                    }
-
-
-                }
-
-                // To separe items
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                    //.background(color = Color.DarkGray)
-                )
-
-                //Documents
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    travel.documentInfo?.let { doc -> // Basicamente se documentInfo existir ele vai ser chamado de doc e vai executar alguma coisa, assim que o let funciona, o ?. verifica se é null ou nao
-                        Text(
-                            text = "Documentation",
-                            style = MaterialTheme.typography.headlineSmall
-                        )
-                        doc.passportNumber?.let {
-                            Text(
-                                text = "Passport: $it",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                        doc.rgOrCpf?.let {
-                            Text(
-                                text = "RG or CPF: $it",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                        }
-                    }
-                }
-                // To separe items
-                Spacer(
-                    modifier = Modifier
-                        .padding(vertical = 10.dp)
-                        .fillMaxWidth()
-                        .height(5.dp)
-                        .background(color = MaterialTheme.colorScheme.primary)
-                    //.background(color = Color.DarkGray)
-                )
-
-                //Additional Notes
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-
-                    travel.notes?.let { note ->
-                        Text(
-                            text = "Notes",
+                            text = "Budget overview",
                             style = MaterialTheme.typography.headlineSmall
                         )
                         Text(
-                            text = note,
+                            text = "Total Budget: " + Money(travel.budget),
                             style = MaterialTheme.typography.bodyLarge
                         )
-                        Spacer(
-                            modifier = Modifier
-                                .padding(10.dp)
+                        val totalSpent =
+                            travel.expenses.sumOf { it.amount } //This function sumOf iterates over the list and it is summing the amounts
+                        Text(
+                            text = "Spent: " + Money(totalSpent),
+                            style = MaterialTheme.typography.bodyLarge
                         )
+                        Text(
+                            text = "Remaining: " + Money(travel.budget - totalSpent),
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                    }
+
+                    // To separe items
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                        //.background(color = Color.DarkGray)
+                    )
+
+                    //Expenses
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        Text(
+                            text = "Expenses",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+
+                        travel.expenses.forEach { expenseItem -> // nesse caso é necessario usar foreach pq nad da pra por lazycolumn dentro de lazy column se nao da problema
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .weight(2f)
+                                        .fillMaxWidth(),
+                                    text = expenseItem.description,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    text = Money(expenseItem.amount),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    text = expenseItem.category,
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+
+
+                        Button(
+                            onClick = {
+                                //click
+                            }
+                        ) {
+                            Text(
+                                text = "+ Add Expense",
+                                fontSize = 20.sp,
+                            )
+                        }
+                    }
+
+                    // To separe items
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                        //.background(color = Color.DarkGray)
+                    )
+
+                    // Flights
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        Text(
+                            text = "Flights",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                        travel.flights.forEach { flightItem ->
+                            FlightCard(flightItem)
+                        }
+
+
+                    }
+
+                    // To separe items
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                        //.background(color = Color.DarkGray)
+                    )
+
+                    //Hotels
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+
+                        Text(
+                            text = "Hotels",
+                            style = MaterialTheme.typography.headlineSmall
+                        )
+                        travel.hotels.forEach { hotelItem ->
+                            HotelCard(hotelItem)
+                        }
+
+
+                    }
+
+                    // To separe items
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                        //.background(color = Color.DarkGray)
+                    )
+
+                    //Documents
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+                        travel.documentInfo?.let { doc -> // Basicamente se documentInfo existir ele vai ser chamado de doc e vai executar alguma coisa, assim que o let funciona, o ?. verifica se é null ou nao
+                            Text(
+                                text = "Documentation",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                            doc.passportNumber?.let {
+                                Text(
+                                    text = "Passport: $it",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                            doc.rgOrCpf?.let {
+                                Text(
+                                    text = "RG or CPF: $it",
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        }
+                    }
+                    // To separe items
+                    Spacer(
+                        modifier = Modifier
+                            .padding(vertical = 10.dp)
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .background(color = MaterialTheme.colorScheme.primary)
+                        //.background(color = Color.DarkGray)
+                    )
+
+                    //Additional Notes
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp)
+                    ) {
+
+                        travel.notes?.let { note ->
+                            Text(
+                                text = "Notes",
+                                style = MaterialTheme.typography.headlineSmall
+                            )
+                            Text(
+                                text = note,
+                                style = MaterialTheme.typography.bodyLarge
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
                     }
                 }
             }

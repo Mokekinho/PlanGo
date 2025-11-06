@@ -3,7 +3,6 @@ package com.example.plango.view_models
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.example.plango.database.ExpenseEntity
 import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
 import kotlinx.coroutines.delay
@@ -14,7 +13,7 @@ import kotlinx.coroutines.launch
 
 data class TravelListState( // in the State we define te variables that screen will hold
     val travels: List<Travel> = emptyList(), // List of Travels
-    val isLoading: Boolean = false, //to know if the data of DB was synchronized
+    val isLoading: Boolean = true, //to know if the data of DB was synchronized
     val error: String? = null, // shows the error message if an error occurs
 )
 
@@ -45,15 +44,17 @@ class TravelListViewModel(
 
             try {
                 _state.update { currentState -> // é um objeto do tipo TravelListState
-                    currentState.copy(isLoading = true)
+                    currentState.copy(
+                        isLoading = true,
+                        error = null
+                    )
                 }
                 //estou chamando o update para atualizar o valor atual, é possivel chamar o .value que ja mexe diretamente no valor, mas a  update é o que a documentação oficial usa
 
                 // esta do lado de fora pq é assincrno, as coisas dentro do .update devem ser cosias sincronas
-                val loadedTravels =
-                    repository.getAllTravels() //vai ir carregando as vigens pouco a pouco
+                val loadedTravels = repository.getAllTravels() //vai ir carregando as vigens pouco a pouco
 
-                delay(5000) // to esperando 5 segundos so pra simular um dowload mais demorado
+                //delay(5000) // to esperando 5 segundos so pra simular um dowload mais demorado
 
 
                 // isso so vai rodar depois que o download finalizar
