@@ -38,9 +38,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.plango.database.TravelRepository
 import com.example.plango.navigation.HomeNav
 import com.example.plango.util.Date
+import com.example.plango.view_models.AddEditTravelEvent
+import com.example.plango.view_models.AddEditTravelViewModel
+import com.example.plango.view_models.AddEditTravelViewModelFactory
+import com.example.plango.view_models.TravelInfoViewModel
+import com.example.plango.view_models.TravelInfoViewModelFactory
 import java.time.LocalDate
 
 
@@ -71,35 +78,24 @@ import java.time.LocalDate
 @ExperimentalMaterial3Api
 fun AddEditTravelScreen(
     navController : NavController,
+    repository: TravelRepository,
     travelId : Int? = null,
 ){
 
-    var name by remember {
-        mutableStateOf("")
-    }
+    val viewModel: AddEditTravelViewModel = viewModel(
+        factory = AddEditTravelViewModelFactory(repository, travelId)
+    )
+    val state by viewModel.state.collectAsState()
 
-    var destination by remember {
-        mutableStateOf("")
-    }          // City or country
-    var isInternational by  remember {
-        mutableStateOf(false)
-    }    // Domestic vs international
 
-    var startDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-    var endDate by remember {
-        mutableStateOf(LocalDate.now())
-    }
-    var purpose by remember {
-        mutableStateOf("Vacation")
-    }               // "Vacation", "Work", "Family visit"
-    var budget by remember {
-        mutableDoubleStateOf(0.0)
-    }
-    var notes by remember {
-        mutableStateOf("")
-    }
+    val name = state.name
+    val destination = state.destination          // City or country
+    val isInternational = state.isInternational // Domestic vs international
+    val startDate = state.startDate
+    val endDate = state.endDate
+    val purpose = state.purpose             // "Vacation", "Work", "Family visit"
+    val budget = state.budget
+    val notes = state.notes
 
 
     Scaffold (
@@ -133,7 +129,7 @@ fun AddEditTravelScreen(
                     )
 
                     Text(
-                        text = "New Travel",
+                        text = if (travelId == null) "New Travel" else "Edit Travel",
                         style = MaterialTheme.typography.headlineLarge,
                     )
 
@@ -161,7 +157,7 @@ fun AddEditTravelScreen(
             OutlinedTextField(
                 value = name,
                 onValueChange = {
-                    name = it
+                    viewModel.onEvent(AddEditTravelEvent.NameChanged(it))
                 },
                 label = {
                     Text("Name")
@@ -179,7 +175,7 @@ fun AddEditTravelScreen(
             OutlinedTextField(
                 value = destination,
                 onValueChange = {
-                    destination = it
+                    viewModel.onEvent(AddEditTravelEvent.DestinationChanged(it))
                 },
                 label = {
                     Text("Destination")
@@ -212,7 +208,7 @@ fun AddEditTravelScreen(
                 Switch(
                     checked = isInternational,
                     onCheckedChange = {
-                        isInternational = it
+                        viewModel.onEvent(AddEditTravelEvent.IsInternationalChanged(it))
                     }
                 )
             }
@@ -275,15 +271,22 @@ fun AddEditTravelScreen(
                         TextButton( // é so um texto clicavel basicamente, fica mais bonito
                             onClick = {
                                 //AQUI EU SALVEI AS INFORMAÇÕES DE INICIO E FIM DA VIAGEM NAS VARIAVEIS E FECHEI O DIALOG
-                                startDate = dateState.selectedStartDateMillis?.let {
-                                    LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
-                                } ?: startDate
+                                viewModel.onEvent(
+                                    AddEditTravelEvent.StartDateChanged(
+                                        dateState.selectedStartDateMillis?.let {
+                                            LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
+                                        } ?: startDate
+                                    )
+                                )
+                                viewModel.onEvent(
+                                    AddEditTravelEvent.EndDateChanged(
+                                        dateState.selectedEndDateMillis?.let {
+                                            LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
+                                        } ?: endDate
+                                    )
+                                )
                                 //Salvando as informações do calendario, o que esta no nosso dateState
-                                endDate = dateState.selectedEndDateMillis?.let {
-                                    LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
-                                } ?: endDate
                                 // to transformando isso em LocalDate, pq ele vem em millissegundos desde 1 de janeiro de 1970
-
                                 showDatePicker = false
                             }
                         ) {
@@ -341,7 +344,7 @@ fun AddEditTravelScreen(
                         DropdownMenuItem(
                             text = { Text(option) },
                             onClick = {
-                                purpose = option
+                                viewModel.onEvent(AddEditTravelEvent.PurposeChanged(option))
                                 expanded = false
                             }
                         )
@@ -354,17 +357,11 @@ fun AddEditTravelScreen(
                     .padding(5.dp)
             )
 
-            //BUDGET
-            var budgetText by remember {
-                mutableStateOf<String>("")
-            }
 
             OutlinedTextField(
-                value = budgetText,
+                value = budget.toString(),
                 onValueChange = {
-                    budgetText = it
-
-                    budget = budgetText.toDoubleOrNull() ?: 0.0
+                    viewModel.onEvent(AddEditTravelEvent.BudgetChanged(it.toDoubleOrNull()?: 0.0))
                 },
                 label = {
                     Text(
@@ -382,9 +379,9 @@ fun AddEditTravelScreen(
             )
 
             OutlinedTextField(
-                value = notes,
+                value = notes?: "",
                 onValueChange = {
-                    notes = it
+                    viewModel.onEvent(AddEditTravelEvent.NotesChanged(it))
                 },
                 label = {
                     Text("Notes")
@@ -400,13 +397,19 @@ fun AddEditTravelScreen(
 
             Button(
                 onClick = {
-                    navController.popBackStack()
+                    viewModel.onEvent(AddEditTravelEvent.Save)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text("Add")
+                Text(if (travelId == null) "Add" else "Save")
             }
+            if (state.isSaved) {
+                LaunchedEffect(Unit) {
+                    navController.popBackStack() //volta pro inicio se tiver salvo
+                }
+            }
+
         }
     }
 }

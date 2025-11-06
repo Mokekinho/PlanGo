@@ -52,7 +52,10 @@ fun AppNavigation(
 
         composable<AddEditTravelNav> {
             val args : AddEditTravelNav = it.toRoute()
-            AddEditTravelScreen(navController,args.travelId)
+            AddEditTravelScreen(navController,
+                repository,
+                args.travelId
+            )
         }
 
         // Outra tela de exemplo

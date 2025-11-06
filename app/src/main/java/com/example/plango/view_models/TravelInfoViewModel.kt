@@ -32,7 +32,7 @@ class TravelInfoViewModel(
     }
 
     fun loadTravel(
-        id: Int
+        travelId: Int
     ){
         viewModelScope.launch {
             try {
@@ -43,7 +43,7 @@ class TravelInfoViewModel(
                     )
                 }
 
-                val tempTravel = repository.getTravelById(id)
+                val tempTravel = repository.getTravelById(travelId)
 
                 _state.update {
                     it.copy(
