@@ -16,35 +16,25 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.example.plango.model.DocumentInfo
-import com.example.plango.model.Expense
-import com.example.plango.model.Flight
-import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
 import com.example.plango.util.Date
 import com.example.plango.util.Money
-import java.nio.file.WatchEvent
-import java.time.LocalDate
-
-import android.net.Uri
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.plango.database.TravelRepository
-import com.example.plango.navigation.Routes
 import com.example.plango.navigation.TravelInfoNav
-import com.google.gson.Gson
+import com.example.plango.view_models.TravelListViewModel
+import com.example.plango.view_models.TravelListViewModelFactory
 
 
 
@@ -69,58 +59,52 @@ fun TravelListScreen(
     navController: NavController,//preciso do navController para fazer navegações
     repository: TravelRepository
 ){
-    var travels by remember {
-        mutableStateOf(
-            listOf<Travel>()
-        )
-    }
 
-    LaunchedEffect(Unit) {
-        // Execute a busca (assíncrona)
-        val loadedTravels = repository.getAllTravels()
+    val viewModel: TravelListViewModel = viewModel(
+        factory = TravelListViewModelFactory(repository)
+    )
 
-        travels = loadedTravels
-    }
-
+    val state by viewModel.state.collectAsState() // o estado da minha view model, a variavel que vai observar as mudanças
 
     Column(
         modifier = Modifier
             .padding(innerPadding)
             .fillMaxSize()
-    ){
+    ) {
         Text(
             text = "Travels",
             style = MaterialTheme.typography.displayLarge,
             modifier = Modifier
         )
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            items(travels) { travelItem ->
-
-                Spacer(
-                    modifier = Modifier
-                        .height(5.dp)
-                )
-                TravelCard(travelItem){ selected ->
-                    val travelId = selected.id
-                    navController.navigate(TravelInfoNav(travelId))
-                }
-
-
+        if (state.isLoading) { // se estiver carregando
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ){
+                CircularProgressIndicator()
             }
+        } else if (state.error != null) { // se der algum erro
+            Text("Error: ${state.error}")
+        } else { //quando tiver carregado a lista
 
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                items(state.travels) { travelItem ->
 
+                    Spacer(
+                        modifier = Modifier
+                            .height(5.dp)
+                    )
+                    TravelCard(travelItem) { selected ->
+                        val travelId = selected.id
+                        navController.navigate(TravelInfoNav(travelId))
+                    }
+                }
+            }
         }
     }
-
-
-
-
-
-
 }
 
 @Composable

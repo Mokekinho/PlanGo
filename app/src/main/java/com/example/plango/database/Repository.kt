@@ -11,6 +11,7 @@ class TravelRepository(private val travelDao: TravelDao) {
     }
 
     suspend fun getAllTravels(): List<Travel> {
+        //.map pega item por item e transforma
         return travelDao.getAllTravels().map { it.toDomainModel() }
     }
 
