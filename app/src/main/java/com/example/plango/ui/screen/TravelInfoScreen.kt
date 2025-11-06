@@ -23,6 +23,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -46,6 +47,7 @@ import com.example.plango.database.TravelRepository
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
+import com.example.plango.navigation.AddEditTravelNav
 import com.example.plango.util.Date
 import com.example.plango.util.Money
 import com.example.plango.view_models.TravelInfoViewModel
@@ -108,7 +110,7 @@ fun TravelInfoScreen(
     val state by viewModel.state.collectAsState()
 
 
-    when {
+    when { // TODO colocar esse When dentro do Scaffold
         state.isLoading -> {
             Box(
                 modifier = Modifier.fillMaxSize(),
@@ -142,7 +144,7 @@ fun TravelInfoScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                                contentDescription = "Change Dates",
+                                contentDescription = "Go Back",
                                 modifier = Modifier
                                     .clickable(
                                         onClick = {
@@ -158,6 +160,20 @@ fun TravelInfoScreen(
                             Text(
                                 text = travel.name,
                                 style = MaterialTheme.typography.headlineLarge,
+                            )
+                            Spacer(
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                            Icon(
+                                imageVector = Icons.Default.Edit,
+                                contentDescription = "Edit Content",
+                                modifier = Modifier
+                                    .clickable(
+                                        onClick = {
+                                            navController.navigate(AddEditTravelNav(travelId))
+                                        }
+                                    )
                             )
 
                         }
