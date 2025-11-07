@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -34,45 +33,39 @@ class TravelListViewModel(
 
 
     init { // inicia a nossa view model ja caregando os dados
-        loadTravels()
+        observeTravels() //mudar o nome da Função pq agora nós vamos observar as vigems, ou seja se tiver mudança iremos reagir
     }
 
 
-    fun loadTravels() {
+    fun observeTravels() {
         viewModelScope.launch { // esse viewModelScope é onde a gente vai lançar nossas coroutinas, isso é util pq nesse caso essa função vai fazer um download, o que é assincrono, além disso, esse escopo faz com que as croutinas sejam cancelas quando nao sao mais uteis, por exemplo, o usuario saiu da tela. O .lauch inicia uma coroutina
 
-
-            try {
-                _state.update { currentState -> // é um objeto do tipo TravelListState
-                    currentState.copy(
+            repository.getAllTravels()
+                .onStart { // executa antes de coletar, útil pra mostrar um loading.
+                _state.update {
+                    it.copy(
                         isLoading = true,
                         error = null
                     )
                 }
-                //estou chamando o update para atualizar o valor atual, é possivel chamar o .value que ja mexe diretamente no valor, mas a  update é o que a documentação oficial usa
-
-                // esta do lado de fora pq é assincrno, as coisas dentro do .update devem ser cosias sincronas
-                val loadedTravels = repository.getAllTravels() //vai ir carregando as vigens pouco a pouco
-
-                //delay(5000) // to esperando 5 segundos so pra simular um dowload mais demorado
-
-
-                // isso so vai rodar depois que o download finalizar
-                _state.update { currentState ->
-                    currentState.copy(
-                        isLoading = false, //ja nao ta mais carregando
-                        travels = loadedTravels, // travels receve um novo valor
-                        error = null // nao tem erro
-                    )
-                }
-            } catch (e: Exception) {
-                _state.update { currentState ->
-                    currentState.copy(
-                        isLoading = false,
-                        error = e.message
-                    )
-                }
             }
+                .catch { e -> // pega erros
+                    _state.update {
+                        it.copy(isLoading = false,
+                            error = e.message)
+                    }
+                }
+                .collect { travels-> // ainda se refere ao obejto repository.getAllTravels
+                    //executa toda vez que os dados no banco mudam (inserção, exclusão, atualização).
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            travels = travels,
+                            error = null
+                        )
+                    }
+                }
+
         }
     }
 }

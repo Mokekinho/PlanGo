@@ -6,6 +6,7 @@ import com.example.plango.model.Expense
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 
 class Converters {
@@ -202,7 +203,7 @@ interface TravelDao{
     // Buscar todas as viagens com suas listas associadas
     @Transaction // fala que é um busca em multiplas tabelas             
     @Query("SELECT * FROM TravelEntity")
-    suspend fun getAllTravels(): List<TravelWithList>
+    fun getAllTravels(): Flow<List<TravelWithList>> //Dessa forma toda vez que houver mudanças no bancos de dados o Room vai observar essa mudança e chamar essa função
 
     // Buscar uma viagem específica pelo ID, com todos os dados relacionados
     @Transaction

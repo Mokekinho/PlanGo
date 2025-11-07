@@ -1,6 +1,8 @@
 package com.example.plango.database
 
 import com.example.plango.model.Travel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 // um repositorio basicamente é uma camada entre a Dao e a UI, isso é util pois, caso eu queira mudar a forma de acessar meus dados, por exemplo, na nuvem, eu so mudo aqui e nao no codigo inteiro.
 
@@ -10,9 +12,12 @@ class TravelRepository(private val travelDao: TravelDao) {
         travelDao.upsertTravel(travelEntity)
     }
 
-    suspend fun getAllTravels(): List<Travel> {
-        //.map pega item por item e transforma
-        return travelDao.getAllTravels().map { it.toDomainModel() }
+    fun getAllTravels(): Flow<List<Travel>> {
+        return travelDao.getAllTravels().map { travels ->
+            travels.map {
+                it.toDomainModel()
+            }
+        }
     }
 
     suspend fun getTravelById(id: Int): Travel? {

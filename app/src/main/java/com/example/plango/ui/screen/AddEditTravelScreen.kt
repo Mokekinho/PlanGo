@@ -359,7 +359,7 @@ fun AddEditTravelScreen(
 
 
             OutlinedTextField(
-                value = budget.toString(),
+                value = budget.toString(), // TODO arrumar isso aqui que ele ta ficando infinitamente em 0.0
                 onValueChange = {
                     viewModel.onEvent(AddEditTravelEvent.BudgetChanged(it.toDoubleOrNull()?: 0.0))
                 },
