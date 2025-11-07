@@ -163,7 +163,9 @@ fun TravelCard(
 
             Text(
                 text = travel.destination,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
 
             Row (
