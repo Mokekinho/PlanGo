@@ -20,8 +20,14 @@ class TravelRepository(private val travelDao: TravelDao) {
         }
     }
 
-    suspend fun getTravelById(id: Int): Travel? {
-        return travelDao.getTravelById(id)?.toDomainModel()
+    suspend fun loadTravelById(id: Int): Travel?{
+        return travelDao.loadTravelById(id)?.toDomainModel()
+    }
+
+    fun observeTravelById(id: Int): Flow<Travel?> {
+        return travelDao.observeTravelById(id).map{
+            it?.toDomainModel()
+        }
     }
 
     suspend fun upsertTravelWithList(travel: Travel) {

@@ -8,6 +8,8 @@ import com.example.plango.model.Travel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.jetbrains.annotations.Async
@@ -28,40 +30,43 @@ class TravelInfoViewModel(
     val state: StateFlow<TravelInfoState> = _state.asStateFlow()
 
     init {
-        loadTravel(travelId)
+        observeTravelById(travelId)
     }
 
-    fun loadTravel(
+    fun observeTravelById(
         travelId: Int
     ){
         viewModelScope.launch {
-            try {
-                _state.update {
-                    it.copy(
-                        isLoading = true,
-                        error = null
-                    )
+            repository.observeTravelById(travelId)
+                .onStart {
+                    _state.update {
+                        it.copy(
+                            isLoading = true,
+                            error = null
+                        )
+                    }
+                }
+                .catch {e ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
+                }
+                .collect { travel ->
+                    _state.update {
+                        it.copy(
+                            isLoading = false,
+                            travel = travel,
+                            error = null
+                        )
+                    }
                 }
 
-                val tempTravel = repository.getTravelById(travelId)
 
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        travel = tempTravel,
-                        error = null
-                    )
-                }
-            }
-            catch (e: Exception){
-                _state.update {
-                    it.copy(
-                        isLoading = false,
-                        error = e.message
-                    )
-                }
-            }
         }
+
     }
 }
 

@@ -66,7 +66,7 @@ class AddEditTravelViewModel(
                     )
                 }
 
-                val tempTravel = repository.getTravelById(travelId)
+                val tempTravel = repository.loadTravelById(travelId)
 
                 _state.update {
                     it.copy(

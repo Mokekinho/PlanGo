@@ -42,13 +42,13 @@ class TravelListViewModel(
 
             repository.getAllTravels()
                 .onStart { // executa antes de coletar, útil pra mostrar um loading.
-                _state.update {
-                    it.copy(
-                        isLoading = true,
-                        error = null
-                    )
+                    _state.update {
+                        it.copy(
+                            isLoading = true,
+                            error = null
+                        )
+                    }
                 }
-            }
                 .catch { e -> // pega erros
                     _state.update {
                         it.copy(isLoading = false,
@@ -65,7 +65,6 @@ class TravelListViewModel(
                         )
                     }
                 }
-
         }
     }
 }

@@ -208,7 +208,11 @@ interface TravelDao{
     // Buscar uma viagem específica pelo ID, com todos os dados relacionados
     @Transaction
     @Query("SELECT * FROM TravelEntity WHERE id = :travelId")
-    suspend fun getTravelById(travelId: Int): TravelWithList?
+    fun observeTravelById(travelId: Int): Flow<TravelWithList?>
+
+    @Transaction
+    @Query("SELECT * FROM TravelEntity WHERE id = :travelId")
+    suspend fun loadTravelById(travelId: Int): TravelWithList?
 
 }
 
