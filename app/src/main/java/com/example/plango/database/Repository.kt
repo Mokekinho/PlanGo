@@ -1,5 +1,6 @@
 package com.example.plango.database
 
+import com.example.plango.model.Expense
 import com.example.plango.model.Travel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -11,6 +12,11 @@ class TravelRepository(private val travelDao: TravelDao) {
     suspend fun upsertTravel(travelEntity: TravelEntity) {
         travelDao.upsertTravel(travelEntity)
     }
+
+    suspend fun upsertExpense(expense: Expense, travelId: Int){
+        travelDao.upsertExpense(expense.toEntitySet(travelId))
+    }
+
 
     fun getAllTravels(): Flow<List<Travel>> {
         return travelDao.getAllTravels().map { travels ->
@@ -28,6 +34,10 @@ class TravelRepository(private val travelDao: TravelDao) {
         return travelDao.observeTravelById(id).map{
             it?.toDomainModel()
         }
+    }
+
+    suspend fun loadExpenseById(id: Int): Expense? {
+        return travelDao.loadExpenseById(id)?.toDomainModel()
     }
 
     suspend fun upsertTravelWithList(travel: Travel) {

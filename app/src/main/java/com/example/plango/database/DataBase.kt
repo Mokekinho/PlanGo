@@ -57,7 +57,17 @@ data class ExpenseEntity(
     val amount: Double,
     val category: String,              // "Food", "Transport", "Hotel"
     val date: LocalDate
-)
+){
+    fun toDomainModel(): Expense{
+        return Expense(
+            id = id,
+            description = description,
+            amount = amount,
+            category = category,
+            date = date
+        )
+    }
+}
 
 @Entity
 data class FlightEntity(
@@ -71,7 +81,20 @@ data class FlightEntity(
     val departureDate: LocalDate,
     val arrivalDate: LocalDate,
     val bookingReference: String? = null
-)
+){
+    fun toDomainModel(): Flight{
+        return Flight(
+            id = id,
+            airline = airline,
+            flightNumber = flightNumber,
+            departure = departure,
+            arrival = arrival,
+            departureDate = departureDate,
+            arrivalDate = arrivalDate,
+            bookingReference = bookingReference
+        )
+    }
+}
 
 @Entity
 data class HotelEntity(
@@ -83,7 +106,18 @@ data class HotelEntity(
     val checkIn: LocalDate,
     val checkOut: LocalDate,
     val bookingReference: String? = null
-)
+){
+    fun toDomainModel(): Hotel{
+        return Hotel(
+            id = id,
+            name = name,
+            address = address,
+            checkIn = checkIn,
+            checkOut = checkOut,
+            bookingReference = bookingReference
+        )
+    }
+}
 
 @Entity
 data class DocumentInfoEntity(
@@ -92,7 +126,14 @@ data class DocumentInfoEntity(
     val travelId: Int,
     val passportNumber: String? = null,
     val rgOrCpf: String? = null
-)
+){
+    fun toDomainModel(): DocumentInfo{
+        return DocumentInfo(
+            passportNumber = passportNumber,
+            rgOrCpf = rgOrCpf
+        )
+    }
+}
 
 
 data class TravelWithList(
@@ -137,45 +178,18 @@ data class TravelWithList(
             notes = travelEntity.notes,
 
             expenses = expenses.map { expenseEntity ->
-                Expense(
-                    id = expenseEntity.id,
-                    description = expenseEntity.description,
-                    amount = expenseEntity.amount,
-                    category = expenseEntity.category,
-                    date = expenseEntity.date
-                )
+                expenseEntity.toDomainModel()
             },
 
             flights = flights.map { flightEntity ->
-                Flight(
-                    id = flightEntity.id,
-                    airline = flightEntity.airline,
-                    flightNumber = flightEntity.flightNumber,
-                    departure = flightEntity.departure,
-                    arrival = flightEntity.arrival,
-                    departureDate = flightEntity.departureDate,
-                    arrivalDate = flightEntity.arrivalDate,
-                    bookingReference = flightEntity.bookingReference
-                )
+                flightEntity.toDomainModel()
             },
 
             hotels = hotels.map { hotelEntity ->
-                Hotel(
-                    id = hotelEntity.id,
-                    name = hotelEntity.name,
-                    address = hotelEntity.address,
-                    checkIn = hotelEntity.checkIn,
-                    checkOut = hotelEntity.checkOut,
-                    bookingReference = hotelEntity.bookingReference
-                )
+                hotelEntity.toDomainModel()
             },
 
-            documentInfo = documentInfoEntity?.let { doc ->
-                DocumentInfo(
-                    passportNumber = doc.passportNumber,
-                    rgOrCpf = doc.rgOrCpf
-                )
-            }
+            documentInfo = documentInfoEntity?.toDomainModel()
         )
     }
 
@@ -189,13 +203,24 @@ interface TravelDao{
     suspend fun upsertTravel(travel: TravelEntity)
     //Insere cada tabela
     @Upsert
-    suspend fun upsertExpenses(expenses: List<ExpenseEntity>)
+    suspend fun upsertExpense(expenses: ExpenseEntity)
+    @Transaction
+    suspend fun upsertExpenses(expenses: List<ExpenseEntity>) {
+        expenses.forEach { upsertExpense(it) }
+    }
 
     @Upsert
-    suspend fun upsertFlights(flights: List<FlightEntity>)
-
+    suspend fun upsertFlight(flights: FlightEntity)
+    @Transaction
+    suspend fun upsertFlights(expenses: List<FlightEntity>) {
+        expenses.forEach { upsertFlight(it) }
+    }
     @Upsert
-    suspend fun upsertHotels(hotels: List<HotelEntity>)
+    suspend fun upsertHotel(hotels: HotelEntity)
+    @Transaction
+    suspend fun upsertHotels(expenses: List<HotelEntity>) {
+        expenses.forEach { upsertHotel(it) }
+    }
 
     @Upsert
     suspend fun upsertDocumentInfo(documentInfo: DocumentInfoEntity)
@@ -213,6 +238,9 @@ interface TravelDao{
     @Transaction
     @Query("SELECT * FROM TravelEntity WHERE id = :travelId")
     suspend fun loadTravelById(travelId: Int): TravelWithList?
+
+    @Query("SELECT * FROM ExpenseEntity WHERE  id = :expenseId")
+    suspend fun loadExpenseById(expenseId: Int): ExpenseEntity?
 
 }
 

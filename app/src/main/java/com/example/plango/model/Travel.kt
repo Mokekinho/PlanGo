@@ -7,7 +7,6 @@ import com.example.plango.database.HotelEntity
 import com.example.plango.database.TravelEntity
 import com.example.plango.database.TravelWithList
 import java.time.LocalDate
-import kotlin.text.category
 
 data class Travel(
     val id: Int,
@@ -43,50 +42,18 @@ data class Travel(
         )
 
         val expenseEntities = expenses.map { expense ->
-            ExpenseEntity(
-                id = expense.id,
-                travelId = id,
-                description = expense.description,
-                amount = expense.amount,
-                category = expense.category,
-                date = expense.date
-            )
+            expense.toEntitySet(id)
         }
 
         val flightEntities = flights.map { flight ->
-            FlightEntity(
-                id = flight.id,
-                travelId = id,
-                airline = flight.airline,
-                flightNumber = flight.flightNumber,
-                departure = flight.departure,
-                arrival = flight.arrival,
-                departureDate = flight.departureDate,
-                arrivalDate = flight.arrivalDate,
-                bookingReference = flight.bookingReference
-            )
+            flight.toEntitySet(id)
         }
 
         val hotelEntities = hotels.map { hotel ->
-            HotelEntity(
-                id = hotel.id,
-                travelId = id,
-                name = hotel.name,
-                address = hotel.address,
-                checkIn = hotel.checkIn,
-                checkOut = hotel.checkOut,
-                bookingReference = hotel.bookingReference
-            )
+            hotel.toEntitySet(id)
         }
 
-        val documentInfoEntity = documentInfo?.let {
-            DocumentInfoEntity(
-                id = 0, // será autogerado pelo Room
-                travelId = id,
-                passportNumber = it.passportNumber,
-                rgOrCpf = it.rgOrCpf
-            )
-        }
+        val documentInfoEntity = documentInfo?.toEntitySet(id)
 
         return TravelWithList(
             travelEntity = travelEntity,
@@ -105,7 +72,21 @@ data class Expense(
     val amount: Double,
     val category: String,              // "Food", "Transport", "Hotel"
     val date: LocalDate
-)
+) {
+    fun toEntitySet(
+        travelId: Int
+    ): ExpenseEntity {
+        return ExpenseEntity(
+            id = id,
+            travelId = travelId,
+            description = description,
+            amount = amount,
+            category = category,
+            date = date
+        )
+    }
+}
+
 
 data class Flight(
     val id: Int,
@@ -116,7 +97,24 @@ data class Flight(
     val departureDate: LocalDate,
     val arrivalDate: LocalDate,
     val bookingReference: String? = null
-)
+){
+    fun toEntitySet(
+        travelId: Int
+    ): FlightEntity {
+        return FlightEntity(
+            id = id,
+            travelId = travelId,
+            airline = airline,
+            flightNumber = flightNumber,
+            departure = departure,
+            arrival = arrival,
+            departureDate = departureDate,
+            arrivalDate = arrivalDate,
+            bookingReference = bookingReference
+        )
+    }
+
+}
 
 data class Hotel(
     val id: Int,
@@ -125,9 +123,34 @@ data class Hotel(
     val checkIn: LocalDate,
     val checkOut: LocalDate,
     val bookingReference: String? = null
-)
+){
+    fun toEntitySet(
+        travelId: Int
+    ): HotelEntity {
+        return HotelEntity(
+            id = id,
+            travelId = travelId,
+            name = name,
+            address = address,
+            checkIn = checkIn,
+            checkOut = checkOut,
+            bookingReference = bookingReference
+        )
+    }
+}
 
 data class DocumentInfo(
     val passportNumber: String? = null,
     val rgOrCpf: String? = null
-)
+){
+    fun toEntitySet(
+        travelId: Int
+    ): DocumentInfoEntity {
+        return DocumentInfoEntity(
+            id = 0, // será autogerado pelo Room
+            travelId = travelId,
+            passportNumber = passportNumber,
+            rgOrCpf = rgOrCpf
+        )
+    }
+}

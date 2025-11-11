@@ -25,6 +25,7 @@ data class AddEditTravelState(
     val isSaving: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
+    val showDatePicker : Boolean = false,
 
 )
 
@@ -37,6 +38,7 @@ sealed class AddEditTravelEvent {
     data class PurposeChanged(val value: String) : AddEditTravelEvent()
     data class BudgetChanged(val value: Double) : AddEditTravelEvent()
     data class NotesChanged(val value: String) : AddEditTravelEvent()
+    object ShowDatePicker: AddEditTravelEvent()
     object Save : AddEditTravelEvent()
 }
 
@@ -104,6 +106,7 @@ class AddEditTravelViewModel(
             is AddEditTravelEvent.PurposeChanged -> _state.update { it.copy(purpose = event.value) }
             is AddEditTravelEvent.BudgetChanged -> _state.update { it.copy(budget = event.value) }
             is AddEditTravelEvent.NotesChanged -> _state.update { it.copy(notes = event.value) }
+            is AddEditTravelEvent.ShowDatePicker -> _state.update { it.copy(showDatePicker = !it.showDatePicker) }
             is AddEditTravelEvent.Save -> saveTravel()
         }
     }

@@ -9,13 +9,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DropdownMenuItem
@@ -30,10 +29,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.*
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
@@ -41,61 +45,34 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelRepository
-import com.example.plango.navigation.HomeNav
 import com.example.plango.util.Date
+import com.example.plango.view_models.AddEditExpenseEvent
+import com.example.plango.view_models.AddEditExpenseViewModel
+import com.example.plango.view_models.AddEditExpenseViewModelFactory
 import com.example.plango.view_models.AddEditTravelEvent
 import com.example.plango.view_models.AddEditTravelViewModel
 import com.example.plango.view_models.AddEditTravelViewModelFactory
-import com.example.plango.view_models.TravelInfoViewModel
-import com.example.plango.view_models.TravelInfoViewModelFactory
 import java.time.LocalDate
-
-
-
-/**
------------------------------------------------------
-| ← Back        Add/Edit Travel                     |
------------------------------------------------------
-| Name: [___________________________]               |
-| Destination: [____________________]               |
-| International trip? [ ]                           |
-|                                                   |
-| Start Date:  [YYYY-MM-DD]  ⏰                     |
-| End Date:    [YYYY-MM-DD]  ⏰                     |
-|                                                   |
-| Purpose: [Vacation / Work / Family Visit / Other] |
-| Budget (R$): [__________]                         |
-|                                                   |
-| Notes:                                            |
-| [__________________________________________]      |
-|                                                   |
-|                   [  Save  ]                      |
------------------------------------------------------
-
-**/
 
 @Composable
 @ExperimentalMaterial3Api
-fun AddEditTravelScreen(
+fun AddEditExpenseScreen(
     navController : NavController,
     repository: TravelRepository,
-    travelId : Int? = null,
-){
+    travelId : Int,
+    expenseId: Int? = null
+) {
 
-    val viewModel: AddEditTravelViewModel = viewModel(
-        factory = AddEditTravelViewModelFactory(repository, travelId)
+
+    val viewModel: AddEditExpenseViewModel = viewModel(
+        factory = AddEditExpenseViewModelFactory(repository, travelId, expenseId)
     )
     val state by viewModel.state.collectAsState()
 
-
-    val name = state.name
-    val destination = state.destination          // City or country
-    val isInternational = state.isInternational // Domestic vs international
-    val startDate = state.startDate
-    val endDate = state.endDate
-    val purpose = state.purpose             // "Vacation", "Work", "Family visit"
-    val budget = state.budget
-    val notes = state.notes
+    val description = state.description
+    val amount = state.amount
+    val category = state.category
+    val date = state.date
 
 
     Scaffold (
@@ -129,7 +106,7 @@ fun AddEditTravelScreen(
                     )
 
                     Text(
-                        text = if (travelId == null) "New Travel" else "Edit Travel",
+                        text = if (expenseId == null) "New Expense" else "Edit Expense",
                         style = MaterialTheme.typography.headlineLarge,
                     )
 
@@ -155,63 +132,17 @@ fun AddEditTravelScreen(
         ) {
 
             OutlinedTextField(
-                value = name,
+                value = description,
                 onValueChange = {
-                    viewModel.onEvent(AddEditTravelEvent.NameChanged(it))
+                    viewModel.onEvent(AddEditExpenseEvent.DescriptionChanged(it))
                 },
                 label = {
-                    Text("Name")
+                    Text("Description")
                 },
                 maxLines = 1,
                 modifier = Modifier
                     .fillMaxWidth()
             )
-
-            Spacer(
-                modifier = Modifier
-                    .padding(5.dp)
-            )
-
-            OutlinedTextField(
-                value = destination,
-                onValueChange = {
-                    viewModel.onEvent(AddEditTravelEvent.DestinationChanged(it))
-                },
-                label = {
-                    Text("Destination")
-                },
-                maxLines = 1,
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .padding(5.dp)
-            )
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-
-                ) {
-                Text(
-                    modifier = Modifier,
-                    text = "International",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-                Spacer(
-                    modifier = Modifier
-                        .padding(10.dp)
-                )
-                Switch(
-                    checked = isInternational,
-                    onCheckedChange = {
-                        viewModel.onEvent(AddEditTravelEvent.IsInternationalChanged(it))
-                    }
-                )
-            }
 
             Spacer(
                 modifier = Modifier
@@ -229,7 +160,7 @@ fun AddEditTravelScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Start Date: ${Date(startDate)}  End Date: ${Date(endDate)}",
+                    text = "Date: ${Date(state.date)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
@@ -239,7 +170,7 @@ fun AddEditTravelScreen(
                 Box(
                     modifier = Modifier.clickable(
                         onClick = {
-                            viewModel.onEvent(AddEditTravelEvent.ShowDatePicker)
+                            viewModel.onEvent(AddEditExpenseEvent.ShowDatePicker)
                         }
                     )
                 ) {
@@ -257,44 +188,36 @@ fun AddEditTravelScreen(
             )
 
 
-            val dateState = rememberDateRangePickerState()
+            val dateState = rememberDatePickerState()
             if (showDatePicker) {
                 DatePickerDialog(// isso aqui é o componente que faz com que crie um dialogo na tela, ou seja, o nosso calendario ele vai aparecer num dialogo que fica na tela
 
                     onDismissRequest = { //oq vai acontecer quando o usuario clicar fora
-                        viewModel.onEvent(AddEditTravelEvent.ShowDatePicker)
+                        viewModel.onEvent(AddEditExpenseEvent.ShowDatePicker)
                     },
                     confirmButton = {// oq vai acontecer quando o usuario confirmar a data
                         // aqui a gente tem que criar o compose do botao
                         TextButton( // é so um texto clicavel basicamente, fica mais bonito
                             onClick = {
-                                //AQUI EU SALVEI AS INFORMAÇÕES DE INICIO E FIM DA VIAGEM NAS VARIAVEIS E FECHEI O DIALOG
-                                viewModel.onEvent(
-                                    AddEditTravelEvent.StartDateChanged(
-                                        dateState.selectedStartDateMillis?.let {
-                                            LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
-                                        } ?: startDate
-                                    )
-                                )
-                                viewModel.onEvent(
-                                    AddEditTravelEvent.EndDateChanged(
-                                        dateState.selectedEndDateMillis?.let {
-                                            LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
-                                        } ?: endDate
-                                    )
-                                )
-                                //Salvando as informações do calendario, o que esta no nosso dateState
-                                // to transformando isso em LocalDate, pq ele vem em millissegundos desde 1 de janeiro de 1970
-                                viewModel.onEvent(AddEditTravelEvent.ShowDatePicker)
+
+                                viewModel.onEvent(AddEditExpenseEvent.ShowDatePicker)
                             }
                         ) {
+
+                            viewModel.onEvent(
+                                AddEditExpenseEvent.DateChanged(
+                                    dateState.selectedDateMillis?.let {
+                                        LocalDate.ofEpochDay(it / (24 * 60 * 60 * 1000)) // converte milissegundos para dias
+                                    } ?: date
+                                )
+                            )
                             Text("Ok")
                         }
                     },
                     dismissButton = {
                         TextButton(
                             onClick = {
-                                viewModel.onEvent(AddEditTravelEvent.ShowDatePicker)
+                                viewModel.onEvent(AddEditExpenseEvent.ShowDatePicker)
                             }
                         ) {
                             Text("Cancel")
@@ -302,7 +225,7 @@ fun AddEditTravelScreen(
                     }
                 ) {
                     // aqui a gente coloca o compose do calendario
-                    DateRangePicker(
+                    DatePicker(
                         state = dateState,
                         title = {
                             //quero nenhum titulo
@@ -318,7 +241,16 @@ fun AddEditTravelScreen(
 
             // TIPOS DE VIAGEM
             var expanded by remember { mutableStateOf(false) } // controla se o dropdown está aberto
-            val options = listOf("Vacation", "Work", "Family Visit", "Other")
+            val options = listOf(
+                "Food & Drinks",
+                "Transportation",
+                "Accommodation",
+                "Activities & Entertainment",
+                "Shopping",
+                "Health & Insurance",
+                "Communication",
+                "Fees & Miscellaneous"
+            )
 
             // NAO ACHEI MUITA DOCUMENTAÇÃO ENTAO SO COPIEI DO CHAT GPT
             ExposedDropdownMenuBox(
@@ -326,10 +258,10 @@ fun AddEditTravelScreen(
                 onExpandedChange = { expanded = !expanded }
             ) {
                 OutlinedTextField(
-                    value = purpose,
+                    value = category,
                     onValueChange = {},
                     readOnly = true, // usuário não digita, só seleciona
-                    label = { Text("Purpose") },
+                    label = { Text("Category") },
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
                     modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable) // necessário para o dropdown, mostra onde o menu esta fixado, nesse caso no OutlinedtextField
                 )
@@ -342,7 +274,7 @@ fun AddEditTravelScreen(
                         DropdownMenuItem(
                             text = { Text(option) },
                             onClick = {
-                                viewModel.onEvent(AddEditTravelEvent.PurposeChanged(option))
+                                viewModel.onEvent(AddEditExpenseEvent.CategoryChanged(option))
                                 expanded = false
                             }
                         )
@@ -357,9 +289,9 @@ fun AddEditTravelScreen(
 
 
             OutlinedTextField(
-                value = budget.toString(), // TODO arrumar isso aqui que ele ta ficando infinitamente em 0.0
+                value = amount.toString(), // TODO arrumar isso aqui que ele ta ficando infinitamente em 0.0
                 onValueChange = {
-                    viewModel.onEvent(AddEditTravelEvent.BudgetChanged(it.toDoubleOrNull()?: 0.0))
+                    viewModel.onEvent(AddEditExpenseEvent.AmountChanged(it.toDoubleOrNull()?: 0.0))
                 },
                 label = {
                     Text(
@@ -376,31 +308,14 @@ fun AddEditTravelScreen(
                     .padding(5.dp)
             )
 
-            OutlinedTextField(
-                value = notes?: "",
-                onValueChange = {
-                    viewModel.onEvent(AddEditTravelEvent.NotesChanged(it))
-                },
-                label = {
-                    Text("Notes")
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-
-            Spacer(
-                modifier = Modifier
-                    .padding(5.dp)
-            )
-
             Button(
                 onClick = {
-                    viewModel.onEvent(AddEditTravelEvent.Save)
+                    viewModel.onEvent(AddEditExpenseEvent.Save)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                Text(if (travelId == null) "Add" else "Save")
+                Text(if (expenseId == null) "Add" else "Save")
             }
             if (state.isSaved) {
                 LaunchedEffect(Unit) {
