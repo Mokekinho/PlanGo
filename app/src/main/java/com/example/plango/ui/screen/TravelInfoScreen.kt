@@ -102,14 +102,10 @@ import com.example.plango.view_models.TravelInfoViewModelFactory
 fun TravelInfoScreen(
     navController: NavController,
     travelId: Int,
-    repository: TravelRepository
+    viewModel: TravelInfoViewModel
 ) {
 
-    val viewModel: TravelInfoViewModel = viewModel(
-        factory = TravelInfoViewModelFactory(repository, travelId)
-    )
     val state by viewModel.state.collectAsState()
-
 
     when { // TODO colocar esse When dentro do Scaffold
         state.isLoading -> {

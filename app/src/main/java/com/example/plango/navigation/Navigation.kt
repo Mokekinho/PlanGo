@@ -4,6 +4,7 @@ import android.net.Uri
 import android.net.wifi.hotspot2.pps.HomeSp
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,6 +18,8 @@ import com.example.plango.ui.screen.AddEditTravelScreen
 import com.example.plango.ui.screen.HomeScreen
 import com.example.plango.ui.screen.TravelInfoScreen
 import com.example.plango.ui.screen.TravelListScreen
+import com.example.plango.view_models.TravelInfoViewModel
+import com.example.plango.view_models.TravelInfoViewModelFactory
 import com.google.gson.Gson
 import kotlinx.serialization.Serializable
 
@@ -44,10 +47,16 @@ fun AppNavigation(
         //por enquanto vai ficar assim, no futuro quando eu terminar o banco de dados eu passo so o id
         composable<TravelInfoNav> {
             val args : TravelInfoNav = it.toRoute()
+
+            val viewModel: TravelInfoViewModel = viewModel(
+                factory = TravelInfoViewModelFactory(repository, args.id)
+            )
+
             TravelInfoScreen(
-                navController,
-                args.id,
-                repository
+                navController = navController,
+                travelId = args.id,
+                viewModel = viewModel // Passe como parâmetro
+
             )
         }
 

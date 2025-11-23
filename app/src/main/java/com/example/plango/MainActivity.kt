@@ -14,20 +14,24 @@ import com.example.plango.ui.MainScreen
 
 
 class MainActivity : ComponentActivity() {
-    @ExperimentalMaterial3Api
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        println("onCreate")
 
-        //criei o banco de dados, o ideal é estudar arquitetura MVVM mas por enquanto vai assim msm
-        val db = Room.databaseBuilder(
+
+    private val db by lazy {
+        Room.databaseBuilder(
             applicationContext,
             AppDatabase::class.java,
             "travel_database"
         ).build()
+    }
 
-        val repository = TravelRepository(db.travelDao())
+    private val repository by lazy {
+        TravelRepository(db.travelDao())
+    }
 
+    @ExperimentalMaterial3Api
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        println("onCreate")
         enableEdgeToEdge()
         setContent {
             PlanGoTheme {
