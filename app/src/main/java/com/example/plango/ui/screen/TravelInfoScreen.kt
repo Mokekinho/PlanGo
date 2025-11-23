@@ -31,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +50,7 @@ import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
 import com.example.plango.navigation.AddEditExpenseNav
 import com.example.plango.navigation.AddEditFlightNav
+import com.example.plango.navigation.AddEditHotelNav
 import com.example.plango.navigation.AddEditTravelNav
 import com.example.plango.util.Date
 import com.example.plango.util.Money
@@ -408,6 +410,21 @@ fun TravelInfoScreen(
                         )
                         travel.hotels.forEach { hotelItem ->
                             HotelCard(hotelItem)
+                        }
+
+                        TextButton(
+                            onClick = {
+                                navController.navigate(
+                                    AddEditHotelNav(
+                                        travelId
+                                    )
+                                )
+                            }
+                        ) {
+                            Text(
+                                text = "+ Add Hotel",
+                                fontSize = 20.sp,
+                            )
                         }
 
 

@@ -23,6 +23,10 @@ class TravelRepository(private val travelDao: TravelDao) {
         travelDao.upsertFlight(flight.toEntitySet(travelId))
     }
 
+    suspend fun upsertHotel(hotel: Hotel, travelId: Int){
+        travelDao.upsertHotel(hotel.toEntitySet(travelId))
+    }
+
 
     fun getAllTravels(): Flow<List<Travel>> {
         return travelDao.getAllTravels().map { travels ->
