@@ -242,6 +242,12 @@ interface TravelDao{
     @Query("SELECT * FROM ExpenseEntity WHERE  id = :expenseId")
     suspend fun loadExpenseById(expenseId: Int): ExpenseEntity?
 
+    @Query("SELECT * FROM FlightEntity WHERE  id = :flightId")
+    suspend fun loadFlightById(flightId: Int): FlightEntity?
+
+    @Query("SELECT * FROM HotelEntity WHERE  id = :hotelId")
+    suspend fun loadHotelById(hotelId: Int): HotelEntity?
+
 }
 
 

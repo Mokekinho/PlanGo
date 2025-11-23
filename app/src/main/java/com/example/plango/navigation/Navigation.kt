@@ -14,6 +14,7 @@ import androidx.navigation.toRoute
 import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
 import com.example.plango.ui.screen.AddEditExpenseScreen
+import com.example.plango.ui.screen.AddEditFlightScreen
 import com.example.plango.ui.screen.AddEditTravelScreen
 import com.example.plango.ui.screen.HomeScreen
 import com.example.plango.ui.screen.TravelInfoScreen
@@ -80,6 +81,18 @@ fun AppNavigation(
             )
         }
 
+        composable<AddEditFlightNav>{
+            val args : AddEditFlightNav = it.toRoute()
+
+            AddEditFlightScreen(
+                navController,
+                repository,
+                args.travelId,
+                args.flightId
+            )
+        }
+
+
         // Outra tela de exemplo
         //composable("details") {
         //DetailsScreen(navController)
@@ -105,4 +118,10 @@ data class AddEditTravelNav(
 data class AddEditExpenseNav(
     val travelId: Int,
     val expenseId: Int? = null
+)
+
+@Serializable
+data class AddEditFlightNav(
+    val travelId: Int,
+    val flightId: Int? = null
 )

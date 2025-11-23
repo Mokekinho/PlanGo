@@ -48,6 +48,7 @@ import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
 import com.example.plango.navigation.AddEditExpenseNav
+import com.example.plango.navigation.AddEditFlightNav
 import com.example.plango.navigation.AddEditTravelNav
 import com.example.plango.util.Date
 import com.example.plango.util.Money
@@ -364,6 +365,21 @@ fun TravelInfoScreen(
                         )
                         travel.flights.forEach { flightItem ->
                             FlightCard(flightItem)
+                        }
+
+                        Button(
+                            onClick = {
+                                navController.navigate(
+                                    AddEditFlightNav(
+                                        travelId
+                                    )
+                                )
+                            }
+                        ) {
+                            Text(
+                                text = "+ Add Flight",
+                                fontSize = 20.sp,
+                            )
                         }
 
 

@@ -67,7 +67,7 @@ class AddEditExpenseViewModel(
 
                 _state.update {
                     it.copy(
-                        isLoading = false,
+                        isLoading = true,
                         error = null
                     )
                 }

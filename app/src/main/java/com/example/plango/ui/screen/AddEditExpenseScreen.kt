@@ -160,7 +160,7 @@ fun AddEditExpenseScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Date: ${Date(state.date)}",
+                    text = "Date: ${Date(date)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
