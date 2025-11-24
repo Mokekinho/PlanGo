@@ -20,6 +20,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,9 +30,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.plango.R
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
@@ -173,6 +176,7 @@ fun TravelInfoScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 30.dp)
+                    .padding(horizontal = 20.dp)
             ) { innerPadding ->
 
 
@@ -184,12 +188,15 @@ fun TravelInfoScreen(
 
                 ) {
                     //Title
-
+                    val columnModifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            top = 5.dp,
+                            bottom = 5.dp
+                        )
                     // Basic Information
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
 
 
@@ -202,11 +209,9 @@ fun TravelInfoScreen(
                                 text = travel.destination,
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            Spacer(
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .size(20.dp)
-                                    .background(color = if (travel.isInternational) Color.Green else Color.Blue)
+                            Icon(
+                                painter = painterResource(id = if(travel.isInternational) R.drawable.globe else R.drawable.flag),
+                                contentDescription = "A Globe for international trips or a flag for national trips"
                             )
                             Text(
                                 text = if (travel.isInternational) "International" else "National",
@@ -227,20 +232,11 @@ fun TravelInfoScreen(
 
                     }
                     // To separe items
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth()
-                            .height(5.dp)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                        //.background(color = Color.DarkGray)
-                    )
+                    HorizontalDivider()
 
                     //Budget overview
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
                         Text(
                             text = "Budget overview",
@@ -264,20 +260,12 @@ fun TravelInfoScreen(
                     }
 
                     // To separe items
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth()
-                            .height(5.dp)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                        //.background(color = Color.DarkGray)
-                    )
+                    HorizontalDivider()
+
 
                     //Expenses
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
                         Text(
                             text = "Expenses",
@@ -315,7 +303,7 @@ fun TravelInfoScreen(
                         }
 
 
-                        Button(
+                        TextButton(
                             onClick = {
                                 navController.navigate(
                                     AddEditExpenseNav(
@@ -326,26 +314,17 @@ fun TravelInfoScreen(
                         ) {
                             Text(
                                 text = "+ Add Expense",
-                                fontSize = 20.sp,
+                                fontSize = 15.sp,
                             )
                         }
                     }
 
                     // To separe items
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth()
-                            .height(5.dp)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                        //.background(color = Color.DarkGray)
-                    )
+                    HorizontalDivider()
 
                     // Flights
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
                         Text(
                             text = "Flights",
@@ -355,7 +334,7 @@ fun TravelInfoScreen(
                             FlightCard(flightItem)
                         }
 
-                        Button(
+                        TextButton(
                             onClick = {
                                 navController.navigate(
                                     AddEditFlightNav(
@@ -366,7 +345,7 @@ fun TravelInfoScreen(
                         ) {
                             Text(
                                 text = "+ Add Flight",
-                                fontSize = 20.sp,
+                                fontSize = 15.sp,
                             )
                         }
 
@@ -374,20 +353,11 @@ fun TravelInfoScreen(
                     }
 
                     // To separe items
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth()
-                            .height(5.dp)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                        //.background(color = Color.DarkGray)
-                    )
+                    HorizontalDivider()
 
                     //Hotels
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
 
                         Text(
@@ -409,7 +379,7 @@ fun TravelInfoScreen(
                         ) {
                             Text(
                                 text = "+ Add Hotel",
-                                fontSize = 20.sp,
+                                fontSize = 15.sp,
                             )
                         }
 
@@ -417,20 +387,11 @@ fun TravelInfoScreen(
                     }
 
                     // To separe items
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth()
-                            .height(5.dp)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                        //.background(color = Color.DarkGray)
-                    )
+                    HorizontalDivider()
 
                     //Documents
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
                         travel.documentInfo?.let { doc -> // Basicamente se documentInfo existir ele vai ser chamado de doc e vai executar alguma coisa, assim que o let funciona, o ?. verifica se é null ou nao
                             Text(
@@ -452,20 +413,11 @@ fun TravelInfoScreen(
                         }
                     }
                     // To separe items
-                    Spacer(
-                        modifier = Modifier
-                            .padding(vertical = 10.dp)
-                            .fillMaxWidth()
-                            .height(5.dp)
-                            .background(color = MaterialTheme.colorScheme.primary)
-                        //.background(color = Color.DarkGray)
-                    )
+                    HorizontalDivider()
 
                     //Additional Notes
                     Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 20.dp)
+                        modifier = columnModifier
                     ) {
 
                         travel.notes?.let { note ->
