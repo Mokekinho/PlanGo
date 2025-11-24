@@ -9,11 +9,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePickerDialog
@@ -41,13 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelRepository
-import com.example.plango.navigation.HomeNav
-import com.example.plango.util.Date
+import com.example.plango.util.date
+import com.example.plango.util.money
 import com.example.plango.view_models.AddEditTravelEvent
 import com.example.plango.view_models.AddEditTravelViewModel
 import com.example.plango.view_models.AddEditTravelViewModelFactory
-import com.example.plango.view_models.TravelInfoViewModel
-import com.example.plango.view_models.TravelInfoViewModelFactory
 import java.time.LocalDate
 
 
@@ -60,8 +56,8 @@ import java.time.LocalDate
 | Destination: [____________________]               |
 | International trip? [ ]                           |
 |                                                   |
-| Start Date:  [YYYY-MM-DD]  ⏰                     |
-| End Date:    [YYYY-MM-DD]  ⏰                     |
+| Start date:  [YYYY-MM-DD]  ⏰                     |
+| End date:    [YYYY-MM-DD]  ⏰                     |
 |                                                   |
 | Purpose: [Vacation / Work / Family Visit / Other] |
 | Budget (R$): [__________]                         |
@@ -95,6 +91,7 @@ fun AddEditTravelScreen(
     val endDate = state.endDate
     val purpose = state.purpose             // "Vacation", "Work", "Family visit"
     val budget = state.budget
+    val budgetInCents = state.budgetInCents
     val notes = state.notes
 
 
@@ -229,7 +226,7 @@ fun AddEditTravelScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Start Date: ${Date(startDate)}  End Date: ${Date(endDate)}",
+                    text = "Start date: ${date(startDate)}  End date: ${date(endDate)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
@@ -356,10 +353,18 @@ fun AddEditTravelScreen(
             )
 
 
+            //Editar o Budget
+
             OutlinedTextField(
-                value = budget.toString(), // TODO arrumar isso aqui que ele ta ficando infinitamente em 0.0
-                onValueChange = {
-                    viewModel.onEvent(AddEditTravelEvent.BudgetChanged(it.toDoubleOrNull()?: 0.0))
+                value = money((budgetInCents/100.0)),
+                onValueChange = { value ->
+                    viewModel.onEvent(
+                        AddEditTravelEvent.BudgetChanged(
+                            value.filter {
+                                it.isDigit()
+                            }.toLong()
+                        )
+                    )
                 },
                 label = {
                     Text(

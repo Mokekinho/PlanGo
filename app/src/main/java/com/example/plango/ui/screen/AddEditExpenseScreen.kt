@@ -16,7 +16,6 @@ import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
-import androidx.compose.material3.DateRangePicker
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -26,11 +25,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.material3.rememberDateRangePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -45,13 +42,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelRepository
-import com.example.plango.util.Date
+import com.example.plango.util.date
+import com.example.plango.util.money
 import com.example.plango.view_models.AddEditExpenseEvent
 import com.example.plango.view_models.AddEditExpenseViewModel
 import com.example.plango.view_models.AddEditExpenseViewModelFactory
 import com.example.plango.view_models.AddEditTravelEvent
-import com.example.plango.view_models.AddEditTravelViewModel
-import com.example.plango.view_models.AddEditTravelViewModelFactory
 import java.time.LocalDate
 
 @Composable
@@ -73,6 +69,7 @@ fun AddEditExpenseScreen(
     val amount = state.amount
     val category = state.category
     val date = state.date
+    val budgetInCents = state.budgetInCents
 
 
     Scaffold (
@@ -160,7 +157,7 @@ fun AddEditExpenseScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Date: ${Date(date)}",
+                    text = "date: ${date(date)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
@@ -288,10 +285,18 @@ fun AddEditExpenseScreen(
             )
 
 
+//Editar o Budget
+
             OutlinedTextField(
-                value = amount.toString(), // TODO arrumar isso aqui que ele ta ficando infinitamente em 0.0
-                onValueChange = {
-                    viewModel.onEvent(AddEditExpenseEvent.AmountChanged(it.toDoubleOrNull()?: 0.0))
+                value = money((budgetInCents/100.0)),
+                onValueChange = { value ->
+                    viewModel.onEvent(
+                        AddEditExpenseEvent.AmountChanged(
+                            value.filter {
+                                it.isDigit()
+                            }.toLong()
+                        )
+                    )
                 },
                 label = {
                     Text(

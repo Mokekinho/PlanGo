@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelRepository
-import com.example.plango.util.Date
+import com.example.plango.util.date
 import com.example.plango.view_models.AddEditFlightEvent
 import com.example.plango.view_models.AddEditFlightViewModel
 import com.example.plango.view_models.AddEditFlightViewModelFactory
@@ -204,7 +204,7 @@ fun AddEditFlightScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Departure date: ${Date(departureDate)}",
+                    text = "Departure date: ${date(departureDate)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
@@ -220,7 +220,7 @@ fun AddEditFlightScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Change Departure Date"
+                        contentDescription = "Change Departure date"
                     )
                 }
 
@@ -292,7 +292,7 @@ fun AddEditFlightScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "Arrival date: ${Date(arrivalDate)}",
+                    text = "Arrival date: ${date(arrivalDate)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
@@ -308,7 +308,7 @@ fun AddEditFlightScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Change Arrival Date"
+                        contentDescription = "Change Arrival date"
                     )
                 }
 

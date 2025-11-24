@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 import java.util.Locale
 
-fun Money(
+fun money(
     value : Double
 ):String {
     val currencyFormat = NumberFormat.getCurrencyInstance(Locale.getDefault())
@@ -14,7 +14,7 @@ fun Money(
     return currencyFormat.format(value)
 }
 
-fun  Date(
+fun  date(
     data: LocalDate
 ): String{
     val formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)

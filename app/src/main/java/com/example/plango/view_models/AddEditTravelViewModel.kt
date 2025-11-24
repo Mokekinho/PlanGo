@@ -20,6 +20,7 @@ data class AddEditTravelState(
     val endDate: LocalDate = LocalDate.now(),
     val purpose: String = "Vacation",
     val budget: Double = 0.0,
+    val budgetInCents: Long = 0,
     val notes: String? = null,
     val isSaved: Boolean = false,
     val isSaving: Boolean = false,
@@ -36,7 +37,7 @@ sealed class AddEditTravelEvent {
     data class StartDateChanged(val value: LocalDate) : AddEditTravelEvent()
     data class EndDateChanged(val value: LocalDate) : AddEditTravelEvent()
     data class PurposeChanged(val value: String) : AddEditTravelEvent()
-    data class BudgetChanged(val value: Double) : AddEditTravelEvent()
+    data class BudgetChanged(val value: Long) : AddEditTravelEvent()
     data class NotesChanged(val value: String) : AddEditTravelEvent()
     object ShowDatePicker: AddEditTravelEvent()
     object Save : AddEditTravelEvent()
@@ -104,7 +105,12 @@ class AddEditTravelViewModel(
             is AddEditTravelEvent.StartDateChanged -> _state.update { it.copy(startDate = event.value) }
             is AddEditTravelEvent.EndDateChanged -> _state.update { it.copy(endDate = event.value) }
             is AddEditTravelEvent.PurposeChanged -> _state.update { it.copy(purpose = event.value) }
-            is AddEditTravelEvent.BudgetChanged -> _state.update { it.copy(budget = event.value) }
+            is AddEditTravelEvent.BudgetChanged -> {
+                _state.update { it.copy(
+                    budget = event.value/100.0,
+                    budgetInCents = event.value
+                ) }
+            }
             is AddEditTravelEvent.NotesChanged -> _state.update { it.copy(notes = event.value) }
             is AddEditTravelEvent.ShowDatePicker -> _state.update { it.copy(showDatePicker = !it.showDatePicker) }
             is AddEditTravelEvent.Save -> saveTravel()

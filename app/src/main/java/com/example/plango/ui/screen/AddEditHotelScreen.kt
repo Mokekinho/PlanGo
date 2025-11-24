@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelRepository
-import com.example.plango.util.Date
+import com.example.plango.util.date
 import com.example.plango.view_models.AddEditHotelEvent
 import com.example.plango.view_models.AddEditHotelViewModel
 import com.example.plango.view_models.AddEditHotelViewModelFactory
@@ -166,7 +166,7 @@ fun AddEditHotelScreen(
             ) {
                 Text(
                     modifier = Modifier,
-                    text = "CheckIn: ${Date(checkIn)}  CheckOut: ${Date(checkOut)}",
+                    text = "CheckIn: ${date(checkIn)}  CheckOut: ${date(checkOut)}",
                     style = MaterialTheme.typography.bodyLarge
                 )
                 Spacer(
@@ -182,7 +182,7 @@ fun AddEditHotelScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.DateRange,
-                        contentDescription = "Change CheckIn and CheckOut Date"
+                        contentDescription = "Change CheckIn and CheckOut date"
                     )
                 }
 

@@ -27,8 +27,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.plango.model.Travel
-import com.example.plango.util.Date
-import com.example.plango.util.Money
+import com.example.plango.util.date
+import com.example.plango.util.money
 import androidx.compose.runtime.*
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.plango.database.TravelRepository
@@ -173,7 +173,7 @@ fun TravelCard(
                     .fillMaxWidth()
             ){
                 Text(
-                    text = Date(travel.startDate),
+                    text = date(travel.startDate),
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Text(
@@ -181,7 +181,7 @@ fun TravelCard(
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Text(
-                    text = Date(travel.endDate),
+                    text = date(travel.endDate),
                     style = MaterialTheme.typography.headlineSmall
                 )
             }
@@ -190,12 +190,12 @@ fun TravelCard(
                     .fillMaxWidth()
             ){
                 Text(
-                    text = "Budget: ${Money(travel.budget)} ",
+                    text = "Budget: ${money(travel.budget)} ",
                     style = MaterialTheme.typography.headlineSmall
                 )
                 /**
                 Text(
-                    text = "Spent: ${Money(travel.expenses)}",
+                    text = "Spent: ${money(travel.expenses)}",
                     style = MaterialTheme.typography.headlineSmall
                 )
                 **/

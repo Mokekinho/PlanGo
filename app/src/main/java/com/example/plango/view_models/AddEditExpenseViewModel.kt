@@ -19,6 +19,7 @@ import java.time.LocalDate
 data class AddEditExpenseState(
     val description: String = "",           // "Dinner at restaurant"
     val amount: Double = 0.0,
+    val budgetInCents : Long = 0,
     val category: String = "Food & Drinks",            // "Food", "Transport", "Hotel"
     val date: LocalDate = LocalDate.now(),
 
@@ -31,7 +32,7 @@ data class AddEditExpenseState(
 
 
 sealed class AddEditExpenseEvent{
-    data class AmountChanged(val amount: Double): AddEditExpenseEvent()
+    data class AmountChanged(val amount: Long): AddEditExpenseEvent()
     data class DescriptionChanged(val description: String): AddEditExpenseEvent()
     data class CategoryChanged(val category: String): AddEditExpenseEvent()
     data class DateChanged(val date: LocalDate): AddEditExpenseEvent()
@@ -101,7 +102,14 @@ class AddEditExpenseViewModel(
     fun onEvent(event: AddEditExpenseEvent) {
         when (event) {
             is AddEditExpenseEvent.DescriptionChanged -> _state.update { it.copy(description = event.description) }
-            is AddEditExpenseEvent.AmountChanged -> _state.update { it.copy(amount = event.amount) }
+            is AddEditExpenseEvent.AmountChanged -> {
+                _state.update {
+                    it.copy(
+                        amount = event.amount/100.0,
+                        budgetInCents = event.amount
+                    )
+                }
+            }
             is AddEditExpenseEvent.CategoryChanged -> _state.update { it.copy(category = event.category) }
             is AddEditExpenseEvent.DateChanged -> _state.update { it.copy(date = event.date) }
             is AddEditExpenseEvent.ShowDatePicker -> _state.update { it.copy(showDatePicker = !it.showDatePicker) }

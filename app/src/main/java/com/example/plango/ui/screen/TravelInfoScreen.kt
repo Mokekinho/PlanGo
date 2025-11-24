@@ -3,12 +3,8 @@ package com.example.plango.ui.screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.scrollable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,8 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -29,22 +23,15 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.example.plango.database.TravelEntity
-import com.example.plango.database.TravelRepository
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
@@ -52,10 +39,9 @@ import com.example.plango.navigation.AddEditExpenseNav
 import com.example.plango.navigation.AddEditFlightNav
 import com.example.plango.navigation.AddEditHotelNav
 import com.example.plango.navigation.AddEditTravelNav
-import com.example.plango.util.Date
-import com.example.plango.util.Money
+import com.example.plango.util.date
+import com.example.plango.util.money
 import com.example.plango.view_models.TravelInfoViewModel
-import com.example.plango.view_models.TravelInfoViewModelFactory
 
 
 /**
@@ -232,7 +218,7 @@ fun TravelInfoScreen(
                                 .fillMaxWidth()
                         ) {
                             Text(
-                                text = Date(travel.startDate) + " - " + Date(travel.endDate) + " - " + travel.purpose,
+                                text = date(travel.startDate) + " - " + date(travel.endDate) + " - " + travel.purpose,
                                 style = MaterialTheme.typography.bodyLarge
                             )
 
@@ -261,17 +247,17 @@ fun TravelInfoScreen(
                             style = MaterialTheme.typography.headlineSmall
                         )
                         Text(
-                            text = "Total Budget: " + Money(travel.budget),
+                            text = "Total Budget: " + money(travel.budget),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         val totalSpent =
                             travel.expenses.sumOf { it.amount } //This function sumOf iterates over the list and it is summing the amounts
                         Text(
-                            text = "Spent: " + Money(totalSpent),
+                            text = "Spent: " + money(totalSpent),
                             style = MaterialTheme.typography.bodyLarge
                         )
                         Text(
-                            text = "Remaining: " + Money(travel.budget - totalSpent),
+                            text = "Remaining: " + money(travel.budget - totalSpent),
                             style = MaterialTheme.typography.bodyLarge
                         )
 
@@ -315,7 +301,7 @@ fun TravelInfoScreen(
                                     modifier = Modifier
                                         .weight(1f)
                                         .fillMaxWidth(),
-                                    text = Money(expenseItem.amount),
+                                    text = money(expenseItem.amount),
                                     style = MaterialTheme.typography.bodyLarge
                                 )
                                 Text(
@@ -532,7 +518,7 @@ fun FlightCard(
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
-                text = Date(flight.departureDate) + " → " + Date(flight.arrivalDate),
+                text = date(flight.departureDate) + " → " + date(flight.arrivalDate),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
@@ -575,7 +561,7 @@ fun HotelCard(
             )
 
             Text(
-                text = "Check-in: " + Date(hotel.checkIn) + " | " + "Check-out: " + Date(hotel.checkOut),
+                text = "Check-in: " + date(hotel.checkIn) + " | " + "Check-out: " + date(hotel.checkOut),
                 style = MaterialTheme.typography.bodyLarge
             )
             Text(
