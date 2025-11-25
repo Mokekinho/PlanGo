@@ -140,6 +140,7 @@ data class Hotel(
 }
 
 data class DocumentInfo(
+    val id: Int = 0,
     val passportNumber: String? = null,
     val rgOrCpf: String? = null
 ){
@@ -147,7 +148,7 @@ data class DocumentInfo(
         travelId: Int
     ): DocumentInfoEntity {
         return DocumentInfoEntity(
-            id = 0, // será autogerado pelo Room
+            id = id,
             travelId = travelId,
             passportNumber = passportNumber,
             rgOrCpf = rgOrCpf

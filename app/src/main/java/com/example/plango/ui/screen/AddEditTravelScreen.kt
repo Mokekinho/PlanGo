@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.plango.database.TravelRepository
+import com.example.plango.model.DocumentInfo
 import com.example.plango.util.date
 import com.example.plango.util.money
 import com.example.plango.view_models.AddEditTravelEvent
@@ -90,9 +91,9 @@ fun AddEditTravelScreen(
     val startDate = state.startDate
     val endDate = state.endDate
     val purpose = state.purpose             // "Vacation", "Work", "Family visit"
-    val budget = state.budget
     val budgetInCents = state.budgetInCents
     val notes = state.notes
+    val documentInfo = state.documentInfo
 
 
     Scaffold (
@@ -380,6 +381,53 @@ fun AddEditTravelScreen(
                 modifier = Modifier
                     .padding(5.dp)
             )
+
+
+            OutlinedTextField(
+                value = documentInfo?.passportNumber?: "",
+                onValueChange = {
+                    viewModel.onEvent(
+                        AddEditTravelEvent.DocumentInfoChanged(
+                            documentInfo?.copy(passportNumber = it)
+                                ?: DocumentInfo(passportNumber = it)
+                        )
+                    )
+                },
+                label = {
+                    Text("Passport Number")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .padding(5.dp)
+            )
+
+            OutlinedTextField(
+                value = documentInfo?.rgOrCpf?: "",
+                onValueChange = {
+                    viewModel.onEvent(
+                        AddEditTravelEvent.DocumentInfoChanged(
+                            documentInfo?.copy(rgOrCpf = it)
+                                ?: DocumentInfo(rgOrCpf = it)
+                        )
+                    )
+                },
+                label = {
+                    Text("RG or CPF")
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+            )
+
+            Spacer(
+                modifier = Modifier
+                    .padding(5.dp)
+            )
+
+
 
             OutlinedTextField(
                 value = notes?: "",

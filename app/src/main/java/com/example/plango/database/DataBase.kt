@@ -129,6 +129,7 @@ data class DocumentInfoEntity(
 ){
     fun toDomainModel(): DocumentInfo{
         return DocumentInfo(
+            id = id,
             passportNumber = passportNumber,
             rgOrCpf = rgOrCpf
         )
@@ -247,6 +248,10 @@ interface TravelDao{
 
     @Query("SELECT * FROM HotelEntity WHERE  id = :hotelId")
     suspend fun loadHotelById(hotelId: Int): HotelEntity?
+
+    // quando for nulo ele vai deletar todas as linhas que tiverem o id da viagem
+    @Query("DELETE FROM DocumentInfoEntity WHERE travelId = :travelId")
+    suspend fun deleteDocumentInfo(travelId: Int)
 
 }
 

@@ -73,6 +73,12 @@ class TravelRepository(private val travelDao: TravelDao) {
         if (expenses.isNotEmpty()) travelDao.upsertExpenses(expenses)
         if (flights.isNotEmpty()) travelDao.upsertFlights(flights)
         if (hotels.isNotEmpty()) travelDao.upsertHotels(hotels)
-        documentInfo?.let { travelDao.upsertDocumentInfo(it) }
+        // se for diferente de null ele vai att, se nao ele vai apagar
+        if (documentInfo != null) {
+            travelDao.upsertDocumentInfo(documentInfo)
+        } else {
+            // ⭐ AQUI RESOLVE O BUG:
+            travelDao.deleteDocumentInfo(travelEntity.id)
+        }
     }
 }

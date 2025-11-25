@@ -1,9 +1,11 @@
 package com.example.plango.view_models
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.plango.database.TravelRepository
+import com.example.plango.model.DocumentInfo
 import com.example.plango.model.Travel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +23,9 @@ data class AddEditTravelState(
     val purpose: String = "Vacation",
     val budget: Double = 0.0,
     val budgetInCents: Long = 0,
+    val documentInfo: DocumentInfo? = null,
     val notes: String? = null,
+
     val isSaved: Boolean = false,
     val isSaving: Boolean = false,
     val isLoading: Boolean = false,
@@ -39,6 +43,7 @@ sealed class AddEditTravelEvent {
     data class PurposeChanged(val value: String) : AddEditTravelEvent()
     data class BudgetChanged(val value: Long) : AddEditTravelEvent()
     data class NotesChanged(val value: String) : AddEditTravelEvent()
+    data class DocumentInfoChanged(val value: DocumentInfo?) : AddEditTravelEvent()
     object ShowDatePicker: AddEditTravelEvent()
     object Save : AddEditTravelEvent()
 }
@@ -81,7 +86,8 @@ class AddEditTravelViewModel(
                         endDate = tempTravel.endDate,
                         purpose = tempTravel.purpose,
                         budget = tempTravel.budget,
-                        notes = tempTravel.notes
+                        notes = tempTravel.notes,
+                        documentInfo = tempTravel.documentInfo
                     )
                 }
             }
@@ -111,6 +117,22 @@ class AddEditTravelViewModel(
                     budgetInCents = event.value
                 ) }
             }
+            is AddEditTravelEvent.DocumentInfoChanged -> {
+                val rgOrCpf: String? = event.value?.rgOrCpf?.ifEmpty { null }
+                val passportNumber: String? = event.value?.passportNumber?.ifEmpty { null }
+
+                val documentInfo = if (rgOrCpf != null ||  passportNumber != null) DocumentInfo(
+                    id = event.value.id,
+                    passportNumber = passportNumber,
+                    rgOrCpf = rgOrCpf
+                ) else null
+                Log.d("AddEditTravelViewModel", "rgOrCpf = $rgOrCpf, passportNumber = $passportNumber, documentInfo = $documentInfo")
+                _state.update {
+                    it.copy(
+                        documentInfo = documentInfo
+                    )
+                }
+            }
             is AddEditTravelEvent.NotesChanged -> _state.update { it.copy(notes = event.value) }
             is AddEditTravelEvent.ShowDatePicker -> _state.update { it.copy(showDatePicker = !it.showDatePicker) }
             is AddEditTravelEvent.Save -> saveTravel()
@@ -137,6 +159,7 @@ class AddEditTravelViewModel(
                     endDate = _state.value.endDate,
                     purpose = _state.value.purpose,
                     budget = _state.value.budget,
+                    documentInfo = _state.value.documentInfo,
                     notes = _state.value.notes
                 )
 
