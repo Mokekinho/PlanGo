@@ -25,8 +25,8 @@ data class AddEditFlightState(
     val isSaving: Boolean = false,
     val isLoading: Boolean = false,
     val error: String? = null,
-    val showDepartureDatePicker : Boolean = false,
-    val showArrivalDatePicker : Boolean = false,
+    val showDepartureDatePicker: Boolean = false,
+    val showArrivalDatePicker: Boolean = false,
 )
 
 
