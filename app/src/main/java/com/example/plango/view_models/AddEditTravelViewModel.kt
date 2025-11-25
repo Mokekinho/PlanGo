@@ -133,7 +133,7 @@ class AddEditTravelViewModel(
                     )
                 }
             }
-            is AddEditTravelEvent.NotesChanged -> _state.update { it.copy(notes = event.value) }
+            is AddEditTravelEvent.NotesChanged -> _state.update { it.copy(notes = event.value.ifEmpty { null }) }
             is AddEditTravelEvent.ShowDatePicker -> _state.update { it.copy(showDatePicker = !it.showDatePicker) }
             is AddEditTravelEvent.Save -> saveTravel()
         }

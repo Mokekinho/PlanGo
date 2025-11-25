@@ -3,6 +3,7 @@ package com.example.plango.ui.screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -149,6 +150,8 @@ fun TravelInfoScreen(
                             Text(
                                 text = travel.name,
                                 style = MaterialTheme.typography.headlineLarge,
+                                modifier = Modifier
+                                    .weight(1f) // manda se ajustar no espaço disponivel
                             )
                             Spacer(
                                 modifier = Modifier
@@ -157,6 +160,7 @@ fun TravelInfoScreen(
                             Icon(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit Content",
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier
                                     .clickable(
                                         onClick = {
@@ -211,7 +215,10 @@ fun TravelInfoScreen(
                             )
                             Icon(
                                 painter = painterResource(id = if(travel.isInternational) R.drawable.globe else R.drawable.flag),
-                                contentDescription = "A Globe for international trips or a flag for national trips"
+                                contentDescription = "A Globe for international trips or a flag for national trips",
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier
+                                    .padding(horizontal = 3.dp)
                             )
                             Text(
                                 text = if (travel.isInternational) "International" else "National",
@@ -386,14 +393,17 @@ fun TravelInfoScreen(
 
                     }
 
-                    // To separe items
-                    HorizontalDivider()
+
 
                     //Documents
                     Column(
                         modifier = columnModifier
                     ) {
                         travel.documentInfo?.let { doc -> // Basicamente se documentInfo existir ele vai ser chamado de doc e vai executar alguma coisa, assim que o let funciona, o ?. verifica se é null ou nao
+
+                            // To separe items
+                            HorizontalDivider()
+
                             Text(
                                 text = "Documentation",
                                 style = MaterialTheme.typography.headlineSmall
@@ -412,8 +422,7 @@ fun TravelInfoScreen(
                             }
                         }
                     }
-                    // To separe items
-                    HorizontalDivider()
+
 
                     //Additional Notes
                     Column(
@@ -421,6 +430,8 @@ fun TravelInfoScreen(
                     ) {
 
                         travel.notes?.let { note ->
+                            // To separe items
+                            HorizontalDivider()
                             Text(
                                 text = "Notes",
                                 style = MaterialTheme.typography.headlineSmall
@@ -450,6 +461,7 @@ fun FlightCard(
 ){
     Box(
         modifier = Modifier
+            .padding(vertical = 5.dp)
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
@@ -492,6 +504,7 @@ fun HotelCard(
 ) {
     Box(
         modifier = Modifier
+            .padding(vertical = 5.dp)
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.primaryContainer,
