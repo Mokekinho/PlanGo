@@ -249,8 +249,29 @@ interface TravelDao{
     @Query("SELECT * FROM HotelEntity WHERE  id = :hotelId")
     suspend fun loadHotelById(hotelId: Int): HotelEntity?
 
-    // quando for nulo ele vai deletar todas as linhas que tiverem o id da viagem
-    @Query("DELETE FROM DocumentInfoEntity WHERE travelId = :travelId")
+    //Delete
+    @Transaction
+    suspend fun deleteTravelWithList(travelId: Int) {
+        deleteExpense(travelId)
+        deleteFlight(travelId)
+        deleteHotel(travelId)
+        deleteDocumentInfo(travelId)
+        deleteTravel(travelId)
+    }
+
+    @Query("DELETE FROM TravelEntity WHERE id = :travelId")
+    suspend fun deleteTravel(travelId: Int)
+
+    @Query("DELETE FROM ExpenseEntity WHERE travelId = :travelId")
+    suspend fun deleteExpense(travelId: Int)
+
+    @Query("DELETE FROM FlightEntity WHERE travelId = :travelId")
+    suspend fun deleteFlight(travelId: Int)
+
+    @Query("DELETE FROM HotelEntity WHERE travelId = :travelId")
+    suspend fun deleteHotel(travelId: Int)
+
+    @Query("DELETE FROM DocumentInfoEntity WHERE travelId = :travelId") // quando for nulo ele vai deletar todas as linhas que tiverem o id da viagem
     suspend fun deleteDocumentInfo(travelId: Int)
 
 }

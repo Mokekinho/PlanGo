@@ -1,25 +1,22 @@
 package com.example.plango.ui.screen
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -45,6 +42,7 @@ import com.example.plango.navigation.AddEditHotelNav
 import com.example.plango.navigation.AddEditTravelNav
 import com.example.plango.util.date
 import com.example.plango.util.money
+import com.example.plango.view_models.TravelInfoEvent
 import com.example.plango.view_models.TravelInfoViewModel
 
 
@@ -100,6 +98,9 @@ fun TravelInfoScreen(
 
     val state by viewModel.state.collectAsState()
 
+    val eventState by viewModel.eventState.collectAsState()
+
+
     when { // TODO colocar esse When dentro do Scaffold
         state.isLoading -> {
             Box(
@@ -116,7 +117,14 @@ fun TravelInfoScreen(
 
         else -> {
 
-            val travel: Travel = state.travel!!
+            val travel = state.travel
+
+            if (travel == null){
+                LaunchedEffect(Unit) {
+                    navController.popBackStack()
+                }
+                return@TravelInfoScreen
+            }
 
             Scaffold(
                 topBar = {
@@ -440,12 +448,86 @@ fun TravelInfoScreen(
                                 text = note,
                                 style = MaterialTheme.typography.bodyLarge
                             )
-                            Spacer(
-                                modifier = Modifier
-                                    .padding(10.dp)
-                            )
                         }
                     }
+
+                    HorizontalDivider()
+                    // Delete Button
+
+                    val showDeleteDialog = eventState.showDeleteDialog
+                    Row(
+                        modifier = columnModifier
+                            .clickable(
+                                onClick = {
+                                    viewModel.onEvent(TravelInfoEvent.ShowDeleteDialog)
+                                }
+                            )
+                    ) {
+
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete Button",
+                            tint = MaterialTheme.colorScheme.error
+                        )
+                        Spacer(
+                            modifier = Modifier
+                                .padding(5.dp)
+                        )
+                        Text(
+                            text = "Delete",
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+
+                    }
+
+                    if(showDeleteDialog) {
+                        AlertDialog(
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    contentDescription = "Delete"
+                                )
+                            },
+                            title = {
+                                Text(text = "Delete trip?")
+                            },
+                            text = {
+                                Text(text = "This trip will be permanently removed from this app")
+                            },
+                            onDismissRequest = {
+                                viewModel.onEvent(TravelInfoEvent.ShowDeleteDialog)
+                            },
+                            confirmButton = {
+                                TextButton(
+                                    onClick = {
+                                        viewModel.onEvent(TravelInfoEvent.Delete)
+                                        navController.popBackStack()
+                                    }
+                                ) {
+                                    Text("Delete")
+                                }
+                            },
+                            dismissButton = {
+                                TextButton(
+                                    onClick = {
+                                        viewModel.onEvent(TravelInfoEvent.ShowDeleteDialog)
+                                    }
+                                ) {
+                                    Text(
+                                        "Cancel",
+                                    )
+                                }
+                            }
+                        )
+                    }
+
+                    Spacer(
+                        modifier = Modifier
+                            .padding(10.dp)
+                    )
+
+
                 }
             }
         }

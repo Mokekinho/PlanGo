@@ -1,24 +1,20 @@
 package com.example.plango.view_models
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.plango.database.TravelRepository
 import com.example.plango.model.Travel
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jetbrains.annotations.Async
 
 data class TravelInfoState(
     val travel: Travel? = null,
@@ -26,12 +22,23 @@ data class TravelInfoState(
     val error: String? = null,
 )
 
+data class TravelInfoEventState(
+    val showDeleteDialog: Boolean = false,
+)
+
+sealed class TravelInfoEvent {
+    object ShowDeleteDialog: TravelInfoEvent()
+    object Delete: TravelInfoEvent()
+}
+
 
 class TravelInfoViewModel(
     private val repository: TravelRepository,
     private val travelId: Int
 ): ViewModel(){
 
+    private val _eventState = MutableStateFlow(TravelInfoEventState())
+    val eventState: StateFlow<TravelInfoEventState> = _eventState.asStateFlow()
 
     val state: StateFlow<TravelInfoState> = repository.observeTravelById(travelId)
         .map { travel -> // essa função map transforma cada valor que o Flow esta emitindo, inicialmente ele esta emitindo um Travel, e ai ele transforma em TravelInfoState.
@@ -55,6 +62,25 @@ class TravelInfoViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = TravelInfoState(isLoading = true)
         )
+
+
+    fun onEvent(event: TravelInfoEvent){
+        when(event){
+            is TravelInfoEvent.ShowDeleteDialog-> _eventState.update {
+                it.copy(
+                    showDeleteDialog = !it.showDeleteDialog
+                )
+            }
+            is TravelInfoEvent.Delete -> deleteTravel()
+        }
+    }
+
+    fun deleteTravel(){
+        viewModelScope.launch {
+            repository.deleteTravelWithListById(travelId)
+        }
+    }
+
 }
 
 class TravelInfoViewModelFactory( // O propósito dele é dizer ao sistema Android (ou, mais especificamente, à biblioteca ViewModel) como criar uma instância do seu TravelListViewModel quando ele precisa de um argumento, no caso, o TravelRepository.

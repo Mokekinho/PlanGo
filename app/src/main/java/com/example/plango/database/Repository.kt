@@ -4,6 +4,7 @@ import com.example.plango.model.Expense
 import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
+import com.example.plango.view_models.TravelInfoEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -81,4 +82,11 @@ class TravelRepository(private val travelDao: TravelDao) {
             travelDao.deleteDocumentInfo(travelEntity.id)
         }
     }
+
+    //Delete
+    suspend fun deleteTravelWithListById(travelId : Int){
+        travelDao.deleteTravelWithList(travelId)
+    }
+
+
 }
