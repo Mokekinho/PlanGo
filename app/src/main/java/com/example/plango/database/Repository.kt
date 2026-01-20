@@ -5,12 +5,15 @@ import com.example.plango.model.Flight
 import com.example.plango.model.Hotel
 import com.example.plango.model.Travel
 import com.example.plango.view_models.TravelInfoEvent
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 // um repositorio basicamente é uma camada entre a Dao e a UI, isso é util pois, caso eu queira mudar a forma de acessar meus dados, por exemplo, na nuvem, eu so mudo aqui e nao no codigo inteiro.
 
-class TravelRepository(private val travelDao: TravelDao) {
+class TravelRepository @Inject constructor(
+    private val travelDao: TravelDao
+) {
 
     suspend fun upsertTravel(travelEntity: TravelEntity) {
         travelDao.upsertTravel(travelEntity)

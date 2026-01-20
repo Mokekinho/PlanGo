@@ -8,6 +8,9 @@ plugins {
 
     //KSP pra funcionar o room, outra alternativa é o kapt so que é bem mais lento
     id("com.google.devtools.ksp")
+
+    // Hilt
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -78,5 +81,9 @@ dependencies {
     ksp("androidx.room:room-compiler:$room_version")
     // optional - Kotlin Extensions and Coroutines support for Room
     implementation("androidx.room:room-ktx:$room_version")
+
+    // Hilt
+    implementation("com.google.dagger:hilt-android:2.57.1")
+    ksp("com.google.dagger:hilt-android-compiler:2.57.1")
 
 }

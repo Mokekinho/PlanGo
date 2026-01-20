@@ -11,8 +11,9 @@ import com.example.plango.database.AppDatabase
 import com.example.plango.database.TravelRepository
 
 import com.example.plango.ui.MainScreen
+import dagger.hilt.android.AndroidEntryPoint
 
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
 

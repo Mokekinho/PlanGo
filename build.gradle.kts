@@ -4,6 +4,10 @@ plugins {
     alias(libs.plugins.kotlin.android) apply false
     alias(libs.plugins.kotlin.compose) apply false
 
-    // pra funcionar o ROOM
+    // KSP pra funcionar o ROOM e também o Dagger Hilt
     id("com.google.devtools.ksp") version "2.0.21-1.0.27" apply false
+
+    // Hilt
+    id("com.google.dagger.hilt.android") version "2.57.1" apply false
+
 }
